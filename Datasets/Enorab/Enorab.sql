@@ -1,9 +1,15 @@
 /*********************************************************************
-Enorab Bank - A ficticious bank
+Enorab Bank - A fake dataset representing a ficticious bank.
 
-Author: David Barone
-Created: 13/10/2024
-Url: https://github.com/davidbarone/Power-BI/tree/main/Datasets/Enorab 
+Author:		David Barone
+Created:	13/10/2024
+Url:		https://github.com/davidbarone/Power-BI/tree/main/Datasets/Enorab 
+Notes:		This script has been written for MSSQL (SQL Server)
+
+Version History:
+
+Version	Date		Author			Details
+1.0		13/10/2024	David Barone	Script created
 *********************************************************************/
 
 BEGIN TRANSACTION
@@ -17,7 +23,7 @@ DECLARE @ReferenceDate DATE = '20241013'	-- This is date that script was created
 DECLARE @Today DATE = GETDATE()
 
 -----------------------------------------------------------
--- Starting datasets
+-- Get some fake datasets for some basic domains.
 --
 -- These datasets obtained using Dbarone.Net.Fake
 -- Url: https://github.com/davidbarone/Dbarone.Net.Fake
