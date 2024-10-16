@@ -20,46 +20,310 @@ BEGIN TRANSACTION
 	DROP TABLE IF EXISTS #Addresses1
 	DROP TABLE IF EXISTS #RegionWeighting
 	DROP TABLE IF EXISTS Address
+	DROP SEQUENCE IF EXISTS SeqBranch
 	DROP TABLE IF EXISTS Branch
-	------------------------------------------------------------
-	-- Create Functions
-	------------------------------------------------------------
-	GO
-	-- =============================================
-	-- Author:		David Barone
-	-- Create date: 20241015
-	-- Description:	Converts Date To Int
-	-- =============================================
-	CREATE FUNCTION DateToInt 
-	(
-		@Date DATE
-	)
-	RETURNS INT
-	AS
-	BEGIN
-		RETURN (YEAR(@Date) * 10000) + (MONTH(@Date) * 100) + DAY(@Date)
-	END;
-	GO	
+	DROP TABLE IF EXISTS DateTable
 
+	IF EXISTS (
+		SELECT * FROM sysobjects WHERE id = object_id(N'fnGetDates')
+		AND xtype IN (N'FN', N'IF', N'TF')
+	)
+	DROP FUNCTION fnGetDates
+
+	IF EXISTS (
+		SELECT * FROM sysobjects WHERE id = object_id(N'DateToInt')
+		AND xtype IN (N'FN', N'IF', N'TF')
+	)
+	DROP FUNCTION DateToInt
+
+	IF EXISTS (
+		SELECT * FROM sysobjects WHERE id = object_id(N'DateTableView')
+		AND xtype IN (N'V')
+	)
+	DROP VIEW DateTableView
+
+------------------------------------------------------------
+-- Create database objects
+------------------------------------------------------------
+
+/****** Object:  UserDefinedFunction [dbo].[fnGetDates]    Script Date: 8/10/2022 3:59:25 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	Converts Date To Int
+-- =============================================
+CREATE FUNCTION DateToInt 
+(
+	@Date DATE
+)
+RETURNS INT
+AS
+BEGIN
+	RETURN (YEAR(@Date) * 10000) + (MONTH(@Date) * 100) + DAY(@Date)
+END;
+GO	
+
+/****** Object:  UserDefinedFunction [dbo].[fnGetDates]    Script Date: 8/10/2022 3:59:25 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+----------------------------------------------------------
+-- GetDates()
+--
+-- This TVF can be used to initialse a date dimension.
+--
+-- Includes calendar and fiscal (July-June) variants.
+----------------------------------------------------------
+CREATE FUNCTION [dbo].[fnGetDates] 
+(   
+    @StartDate DATETIME,
+    @EndDate DATETIME
+)
+RETURNS @DateTable TABLE (
+	
+	-- Standard Calendar
+	
+	[DateKey] [int] NOT NULL,
+	[CalendarDate] [date] NOT NULL,
+	[CalendarDateName] [varchar](11) NOT NULL,
+	[CalendarDayOfWeek] [int] NOT NULL,
+	[CalendarDayOfIsoWeek] [int] NOT NULL,
+	[CalendarDayOfYear] [int] NOT NULL,
+	[CalendarWeekStart] [date] NOT NULL,
+	[CalendarWeekEnd] [date] NOT NULL,
+	[CalendarIsoWeekStart] [date] NOT NULL,
+	[CalendarIsoWeekEnd] [date] NOT NULL,
+	[CalendarDay] [int] NOT NULL,
+	[CalendarDayName] [varchar](3) NOT NULL,
+	[CalendarWeekOfMonth] [int] NOT NULL,
+	[CalendarWeekOfYear] [int] NOT NULL,
+	[CalendarIsoWeekOfYear] [int] NOT NULL,
+	[CalendarMonth] [int] NOT NULL,
+	[CalendarMonthName] [varchar](3) NOT NULL,
+	[CalendarQuarter] [int] NOT NULL,
+	[CalendarSemester] [int] NOT NULL,
+	[CalendarYear] [int] NOT NULL,
+	[CalendarYearMonth] [int] NOT NULL,
+	[CalendarYearMonthName] [varchar](6) NOT NULL,
+
+	-- Alternate / Fiscal Calendar (1-Jul TO 30-Jun)
+
+	[AltCalendarWeekOfYear] [int] NOT NULL,
+	[AltCalendarMonth] [int] NOT NULL,
+	[AltCalendarQuarter] [int] NOT NULL,
+	[AltCalenderSemester] [int] NOT NULL,
+	[AltCalendarYear] [int] NOT NULL,
+	[AltCalenderYearMonth] [int] NOT NULL
+)
+AS
+BEGIN 
+
+	/*
+	DECLARE @StartDate DATETIME
+	DECLARE @EndDate DATETIME
+	SET @StartDate = '01-JAN-2000'
+	SET @EndDate = '31-DEC-2039'
+	*/
+	SET @StartDate = CAST(CAST(@StartDate AS DATE) AS DATETIME)
+	SET @EndDate = CAST(CAST(@EndDate AS DATE) AS DATETIME)
+
+	;WITH cteDates AS
+    ( 
+     select 1 AS Number,
+            @StartDate CalendarDate
+     where  @StartDate <= @EndDate
+     union all 
+     select Number+1,
+            CalendarDate + 1 
+     from    cteDates    
+     where   CalendarDate + 1 < = @EndDate
+    ),
+
+	-- ADD KEYS, AND CALENDAR-DAY-BASED ATTRIBUTES
+	cteCalendar AS
+	(
+		SELECT
+			(YEAR(D.CalendarDate) * 10000) + (MONTH(D.CalendarDate) * 100) + DAY(D.CalendarDate) AS DateKey,
+			CAST(D.CalendarDate AS DATE) CalendarDate,
+			CONVERT(VARCHAR(11), D.CalendarDate, 113) AS CalendarDateName,
+			DATEPART(weekday, D.CalendarDate) AS CalendarDayOfWeek,
+			CASE
+				WHEN (DATEPART(weekday, D.CalendarDate)-1) % 7 = 0 then 7
+				ELSE (DATEPART(weekday, D.CalendarDate)-1) % 7
+			END AS CalendarDayOfIsoWeek,
+			DATEPART(dy, D.CalendarDate) AS CalendarDayOfYear,
+			CAST(D.CalendarDate- DATEPART(weekday, D.CalendarDate) + 1 AS DATE) AS CalendarWeekStart,
+			CAST(D.CalendarDate - DATEPART(weekday, D.CalendarDate) + 7 AS DATE) AS CalendarWeekEnd,
+			DATEADD(dd, 1, CAST(D.CalendarDate- DATEPART(weekday, D.CalendarDate) + 1 AS DATE)) AS CalendarIsoWeekStart,
+			DATEADD(dd, 1, CAST(D.CalendarDate - DATEPART(weekday, D.CalendarDate) + 7 AS DATE)) AS CalendarIsoWeekEnd,
+
+			DATEPART(day, D.CalendarDate) AS CalendarDay,
+
+			CASE(DATEPART(weekday, D.CalendarDate))
+			WHEN 1 THEN 'Sun'
+			WHEN 2 THEN 'Mon'
+			WHEN 3 THEN 'Tue'
+			WHEN 4 THEN 'Wed'
+			WHEN 5 THEN 'Thu'
+			WHEN 6 THEN 'Fri'
+			WHEN 7 THEN 'Sat'
+			END AS CalendarDayName,
+
+			1 + (DATEPART(DAY, D.CalendarDate)/7) AS CalendarWeekOfMonth,
+			DATEPART(week, D.CalendarDate) AS CalendarWeekOfYear,
+			DATEPART(ISO_WEEK, D.CalendarDate) AS CalendarIsoWeekOfYear,
+			MONTH(D.CalendarDate) AS CalendarMonth,
+
+			CASE DATEPART(m, D.CalendarDate)
+			WHEN 1 THEN 'Jan'
+			WHEN 2 THEN 'Feb'
+			WHEN 3 THEN 'Mar'
+			WHEN 4 THEN 'Apr'
+			WHEN 5 THEN 'May'
+			WHEN 6 THEN 'Jun'
+			WHEN 7 THEN 'Jul'
+			WHEN 8 THEN 'Aug'
+			WHEN 9 THEN 'Sep'
+			WHEN 10 THEN 'Oct'
+			WHEN 11 THEN 'Nov'
+			WHEN 12 THEN 'Dec'
+			END AS CalendarMonthName,
+
+			DATEPART(q, D.CalendarDate) AS CalendarQuarter,
+			CASE WHEN MONTH(D.CalendarDate) <=6 THEN 1 ELSE 2 END AS CalendarSemester,
+			YEAR(D.CalendarDate) AS CalendarYear,
+			(YEAR(D.CalendarDate) * 100) + MONTH(D.CalendarDate) AS CalendarYearMonth,
+			SUBSTRING('JanFebMarAprMayJunJulAugSepOctNovDec', ((MONTH(D.CalendarDate)-1)*3)+1,3) + '-' + RIGHT(CAST(YEAR(D.CalendarDate) AS VARCHAR(4)), 2) CalendarYearMonthName
+		FROM    cteDates D
+	)
+	
+	, cteFiscalCalendar
+	AS
+	(
+		SELECT 
+			*,
+			1 + ((CalendarWeekOfYear + 25) % 52) AltCalendarWeekOfYear,
+			1 + ((CalendarMonth+ 5) % 12) AltCalendarMonth,
+			1 + ((CalendarQuarter + 1) % 4) AltCalendarQuarter,
+			1 + (CalendarSemester + 0) % 2 AltCalendarSemester,
+			CalendarYear + CASE WHEN CalendarMonth >6 THEN 1 ELSE 0 END AltCalendarYear,
+			(100 * (CalendarYear + CASE WHEN CalendarMonth >6 THEN 1 ELSE 0 END)) + ((CalendarMonth - 6) % 12) AltCalendarYearMonth
+		FROM
+			cteCalendar
+	)
+
+    INSERT INTO @DateTable
+	SELECT * FROM cteFiscalCalendar OPTION (MAXRECURSION 0) 
+    RETURN;
+END
+
+GO
+
+/****** Object:  Table [dbo].[DateTable]    Script Date: 8/10/2022 4:09:17 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DateTable](
+	[DateKey] [int] NOT NULL,
+	[CalendarDate] [date] NOT NULL,
+	[CalendarDateName] [varchar](11) NOT NULL,
+	[CalendarDayOfWeek] [int] NOT NULL,
+	[CalendarDayOfIsoWeek] [int] NOT NULL,
+	[CalendarDayOfYear] [int] NOT NULL,
+	[CalendarWeekStart] [date] NOT NULL,
+	[CalendarWeekEnd] [date] NOT NULL,
+	[CalendarIsoWeekStart] [date] NOT NULL,
+	[CalendarIsoWeekEnd] [date] NOT NULL,
+	[CalendarDay] [int] NOT NULL,
+	[CalendarDayName] [varchar](3) NOT NULL,
+	[CalendarWeekOfMonth] [int] NOT NULL,
+	[CalendarWeekOfYear] [int] NOT NULL,
+	[CalendarIsoWeekOfYear] [int] NOT NULL,
+	[CalendarMonth] [int] NOT NULL,
+	[CalendarMonthName] [varchar](3) NOT NULL,
+	[CalendarQuarter] [int] NOT NULL,
+	[CalendarSemester] [int] NOT NULL,
+	[CalendarYear] [int] NOT NULL,
+	[CalendarYearMonth] [int] NOT NULL,
+	[CalendarYearMonthName] [varchar](6) NOT NULL,
+	[AltCalendarWeekOfYear] [int] NOT NULL,
+	[AltCalendarMonth] [int] NOT NULL,
+	[AltCalendarQuarter] [int] NOT NULL,
+	[AltCalenderSemester] [int] NOT NULL,
+	[AltCalendarYear] [int] NOT NULL,
+	[AltCalenderYearMonth] [int] NOT NULL,
+ CONSTRAINT [PK_DateTable] PRIMARY KEY CLUSTERED 
+(
+	[DateKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Index [UQ_DateTable_CalendarDate]    Script Date: 8/10/2022 4:09:17 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_DateTable_CalendarDate] ON [dbo].[DateTable]
+(
+	[CalendarDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[DateTableView]    Script Date: 8/10/2022 4:09:17 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[DateTableView]
+AS
+	SELECT
+		*,
+
+		-- AGO FIELDS ARE DYNAMIC BASED ON GETDATE()
+		DATEDIFF(DD, CalendarDate, GETDATE()) CalendarDaysAgo,
+		DATEDIFF(WW, CalendarDate, GETDATE()) CalendarWeeksAgo,
+		DATEDIFF(MM, CalendarDate, GETDATE()) CalendarMonthsAgo,
+		DATEDIFF(QQ, CalendarDate, GETDATE()) CalendarQuartersAgo,
+		DATEDIFF(YY, CalendarDate, GETDATE()) CalendarYearsAgo
+	FROM
+		DateTable
+GO
 
 BEGIN
 
-	DECLARE @Random FLOAT
-	SELECT @Random = RAND(1)	-- Fixed seed, so script is idempotent.
+	DECLARE @Random1 FLOAT
+	DECLARE @Random2 FLOAT
+	SELECT @Random1 = RAND(1)	-- Fixed seed, so script is idempotent.
+	SELECT @Random2 = RAND(2)	-- Fixed seed, so script is idempotent.
 
 	-- Configuration
 	BEGIN
 		-- branch opening rate per region weighting unit
-		DECLARE @NewBranchOpeningRate FLOAT = 1.0/100;
+		DECLARE @NewBranchOpeningRate FLOAT = 4.0/100;
 
 		-- Reference Dates
-		DECLARE @ReferenceDate DATE = '20241013'	-- This is date that script was created. All dates to be adjusted relative to this date.
+		DECLARE @ReferenceDate DATE = '20241013'	-- This is date that script was created. All static dates to be adjusted relative to this date.
 		DECLARE @Today DATE = GETDATE()
 		DECLARE @StartDate DATE = DATEADD(YEAR, -10, GETDATE())
+
 		SELECT
-			'@StartDate' CONFIGURATION, CAST(@StartDate AS VARCHAR) VALUE
-			UNION ALL SELECT '@NewBranchOpeningRate', CAST(@NewBranchOpeningRate AS VARCHAR)
+			'@StartDate' CONFIGURATION, CAST(@StartDate AS VARCHAR) VALUE, 'Start date for the dataset. Enorab is designed with a 10-year data window.' DESCRIPTION
+			UNION ALL SELECT '@NewBranchOpeningRate', CAST(@NewBranchOpeningRate AS VARCHAR), 'A rate (between 0 and 1) determinining the likelyhood of a branch opening on a given date.'
+			UNION ALL SELECT '@ReferenceDate', CAST(@ReferenceDate AS VARCHAR), 'The date that all static dates in the script were generated. This script will automatically adjust these dates to be relative to today.'
+			UNION ALL SELECT '@Today', CAST(@Today AS VARCHAR), 'Today''s date - the last date that data exists in this dataset is @Today - 1.'
 	END
+
+	---------------------------------------------
+	-- Populate Data Dimension
+	---------------------------------------------
+	TRUNCATE TABLE DateTable;
+	INSERT INTO DateTable SELECT * FROM fnGetDates(@StartDate, @Today);
 
 	-----------------------------------------------------------
 	-- Starting datasets
@@ -15113,6 +15377,9 @@ BEGIN
 			[Country] VARCHAR(50)
 		)
 
+		-- Turn blanks into NULLs
+		UPDATE #Addresses SET AddressLine2 = NULLIF(AddressLine2, '')
+
 		-- Dbarone.Net.Fake generates a lot of distinct regions. We'll group by 1st 2 digits of
 		-- postcode, and use the 1st region for each group as a region. This will give us just
 		-- under 100 regions.
@@ -15163,7 +15430,7 @@ BEGIN
 		-- Create a table for region weightings.
 		CREATE TABLE #RegionWeighting (
 			Region VARCHAR(50),
-			Weighting INT,
+			Weighting FLOAT,
 			HasBank BIT
 		)
 
@@ -15177,6 +15444,13 @@ BEGIN
 			#Addresses1
 		GROUP BY
 			Region
+
+		-- Make the weighting a number between 0 and 1 (with 1 representing the region with the most addresses, and all other weightings relative to this).;
+		UPDATE
+			#RegionWeighting
+		SET
+			Weighting = CAST(Weighting AS FLOAT) / (SELECT MAX(Weighting) FROM #RegionWeighting)
+
 	END
 
 	-------------------------------------
@@ -15186,7 +15460,7 @@ BEGIN
 	-------------------------------------
 	BEGIN
 		CREATE TABLE Address (
-			Address_Id INT NOT NULL,
+			AddressId INT NOT NULL,
 			AddressLine1 VARCHAR(250),
 			AddressLine2 VARCHAR(250),
 			Town VARCHAR(50),
@@ -15197,11 +15471,21 @@ BEGIN
 
 		-- Branch
 		CREATE TABLE Branch (
-			Branch_Id SMALLINT NOT NULL,
-			Branch_Name VARCHAR(50) NOT NULL,
-			Branch_Address_Id INT NOT NULL,
-			Branch_Open_Date_Id INT NOT NULL
+			BranchId SMALLINT NOT NULL,
+			BranchName VARCHAR(50) NOT NULL,
+			BranchAddressId INT NOT NULL,
+			BranchOpenDateId INT NOT NULL
 		)
+
+		/****** Object:  Sequence [dbo].[SeqBranch]    Script Date: 16/10/2024 7:57:06 PM ******/
+		CREATE SEQUENCE [dbo].[SeqBranch] 
+		 AS [int]
+		 START WITH 1
+		 INCREMENT BY 1
+		 MINVALUE 1
+		 MAXVALUE 2147483647
+		 CACHE 
+
 	END
 
 END
@@ -15221,7 +15505,8 @@ BEGIN
 	SET @Date = @StartDate
 	WHILE @Date < GETDATE()
 	BEGIN
-		SELECT @Random = RAND()
+		SELECT @Random1 = RAND()
+		SELECT @Random2 = RAND()
 
 		-- 1.1 Creation of new branch
 		BEGIN
@@ -15242,29 +15527,63 @@ BEGIN
 							INNER JOIN
 								Address a
 							ON
-								b.Branch_Address_Id = a.Address_Id
+								b.BranchAddressId = a.AddressId
 								AND a.Region = rw.Region
 						)
-						AND @Random * CAST(Weighting AS FLOAT) > 1-@NewBranchOpeningRate
+						AND @Random1 <= CAST(Weighting AS FLOAT)
+						AND @Random2 > 1 - @NewBranchOpeningRate
 				)
-	
 	
 			IF @NewBankRegion IS NOT NULL
 			BEGIN
 				-- Create new Branch Address
+				DECLARE @Bank_Address_Id INT
+				SELECT @Bank_Address_Id = MIN(AddressId)
+				FROM
+					#Addresses1
+				WHERE
+					1=1
+					AND AddressLine2 IS NULL	-- For branches, don't select an address that is a flat with 2 address lines
+					AND Region = @NewBankRegion
 
-				-- CREATE NEW BRANCH
-				INSERT INTO Branch (
-					Branch_Id,
-					Branch_Name,
-					Branch_Open_Date_Id,
-					Branch_Address_Id)
-				SELECT
-					1,
-					@NewBankRegion,
-					dbo.DateToInt(@Date),
-					-1
+				-- Possible for a region to only have single address, and it to be a flat only address - if so we don't bother creating the branch.
+				IF @Bank_Address_Id IS NOT NULL
+				BEGIN
+					INSERT INTO Address (
+						AddressId,
+						AddressLine1,
+						AddressLine2,
+						Town,
+						Region,
+						Postcode,
+						Country)
+					SELECT
+						AddressId,
+						AddressLine1,
+						AddressLine2,
+						Town,
+						Region,
+						Postcode,
+						Country	
+					FROM
+						#Addresses1
+					WHERE AddressId = @Bank_Address_Id
 
+					-- CREATE NEW BRANCH
+					DECLARE @BranchId INT
+					SELECT @BranchId = NEXT VALUE FOR SeqBranch
+
+					INSERT INTO Branch (
+						BranchId,
+						BranchName,
+						BranchOpenDateId,
+						BranchAddressId)
+					SELECT
+						@BranchId,
+						@NewBankRegion,
+						dbo.DateToInt(@Date),
+						@Bank_Address_Id
+				END
 			END
 		END
 
@@ -15274,9 +15593,12 @@ BEGIN
 END
 
 -- Final Data
+SELECT * FROM DateTableView
+SELECT * FROM #People
 SELECT * FROM #Addresses
 SELECT * FROM #Addresses1
 SELECT * FROM #RegionWeighting
+SELECT * FROM Address
 SELECT * FROM Branch
 
 ROLLBACK
