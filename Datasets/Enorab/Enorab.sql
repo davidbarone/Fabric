@@ -307,6 +307,14 @@ BEGIN
 		-- branch opening rate per region weighting unit
 		DECLARE @NewBranchOpeningRate FLOAT = 4.0/100;
 
+		-- @MarryingTypeThreshold
+		-- Each person gets a random propensity to marry (0..1)
+		-- people can marry under following scenarios
+		-- 1. Person's MarryingType value > @MarryingTypeThreshold, then:
+		-- 2. Randomly marry person of opposite sex with (a) same surname and (b) age within 10 years and (c) both ages > 18
+		-- Don't track when married - assumed fully married / not married for the lifespan of our dataset.
+		DECLARE @MarryingTypeThreshold FLOAT = 0.1				-- people
+
 		-- Reference Dates
 		DECLARE @ReferenceDate DATE = '20241013'	-- This is date that script was created. All static dates to be adjusted relative to this date.
 		DECLARE @Today DATE = GETDATE()
@@ -317,6 +325,7 @@ BEGIN
 			UNION ALL SELECT '@NewBranchOpeningRate', CAST(@NewBranchOpeningRate AS VARCHAR), 'A rate (between 0 and 1) determinining the likelyhood of a branch opening on a given date.'
 			UNION ALL SELECT '@ReferenceDate', CAST(@ReferenceDate AS VARCHAR), 'The date that all static dates in the script were generated. This script will automatically adjust these dates to be relative to today.'
 			UNION ALL SELECT '@Today', CAST(@Today AS VARCHAR), 'Today''s date - the last date that data exists in this dataset is @Today - 1.'
+			UNION ALL SELECT '@MarryingTypeThreshold', CAST(@MarryingTypeThreshold AS VARCHAR), 'Threshold for each person to be marrying type. Value of 1 denotes all people can marry.'
 	END
 
 	---------------------------------------------
@@ -7342,7 +7351,9 @@ BEGIN
 		SELECT
 			*,
 			DATEDIFF(DAY, DoB, @ReferenceDate) DaysAlive,
-			DATEADD(DAY, -DATEDIFF(DAY, DoB, @ReferenceDate), @Today) DoBEx
+			DATEADD(DAY, -DATEDIFF(DAY, DoB, @ReferenceDate), @Today) DoBEx,
+			CAST(NULL AS FLOAT) MarryingType,
+			CAST(NULL AS INT) SpousePersonId
 
 		INTO #People
 		FROM OPENJSON(@peopleJson)
@@ -7355,6 +7366,78 @@ BEGIN
 			[DoB] date
 		)
 	END
+
+	-- Calculate MarryingType for each person
+	WHILE (1=1)
+	BEGIN
+		DECLARE @NextPersonId INT
+		SELECT @NextPersonId = MIN(PersonId) FROM #People WHERE MarryingType IS NULL
+		IF @NextPersonId IS NULL
+		BEGIN
+			BREAK
+		END
+
+		SET @Random1 = RAND()
+		UPDATE #People
+		SET MarryingType = @Random1
+		WHERE PersonId = @NextPersonId
+	END
+
+	-- Marry off people:
+	-- 1. Person must be marrying type
+	-- 2. Must find another person with same surname, within 10 years of age
+	-- 3. Must be > 18 years old
+	-- 4. one M, one F
+	PRINT ('Begin marriage process...')
+
+				SELECT * FROM #People WHERE SEX = 'F' AND MarryingType > @MarryingTypeThreshold
+
+			SELECT TOP 1
+				males.PersonId SpouseMalePersonId,
+				females.PersonId SpouseFemalePersonId
+			FROM
+				(SELECT * FROM #People WHERE SEX = 'M' AND MarryingType > @MarryingTypeThreshold) males
+			INNER JOIN
+				(SELECT * FROM #People WHERE SEX = 'F' AND MarryingType > @MarryingTypeThreshold) females
+			ON
+				males.surname = females.surname
+				AND DATEDIFF(YEAR, males.DoBEx, females.DoBEx) BETWEEN -10 AND 10
+
+	WHILE (1=1)
+	BEGIN
+		DECLARE @SpouseMalePersonId INT
+		DECLARE @SpouseFemalePersonId INT
+
+		SELECT
+			@SpouseMalePersonId = A.SpouseMalePersonId,
+			@SpouseFemalePersonId = A.SpouseFemalePersonId
+		FROM
+		(
+			SELECT TOP 1
+				males.PersonId SpouseMalePersonId,
+				females.PersonId SpouseFemalePersonId
+			FROM
+				(SELECT * FROM #People WHERE Sex = 'M' AND MarryingType > @MarryingTypeThreshold) males
+			INNER JOIN
+				(SELECT * FROM #People WHERE Sex = 'F' AND MarryingType > @MarryingTypeThreshold) females
+			ON
+				males.Surname = females.Surname
+				--AND DATEDIFF(YEAR, males.DoBEx, females.DoBEx) BETWEEN -200 AND 200
+		) A
+
+		PRINT(@SpouseMalePersonId)
+
+		IF @SpouseMalePersonId IS NULL OR @SpouseFemalePersonId IS NULL
+		BEGIN
+			BREAK
+		END
+
+		UPDATE #People SET SpousePersonId = @SpouseFemalePersonId WHERE PersonId = @SpouseMalePersonId 
+		UPDATE #People SET SpousePersonId = @SpouseMalePersonId WHERE PersonId = @SpouseFemalePersonId 
+	END
+	PRINT ('End marriage process...')
+
+
 
 	-- Addresses (1000 rows)
 	BEGIN
@@ -15594,7 +15677,7 @@ END
 
 -- Final Data
 SELECT * FROM DateTableView
-SELECT * FROM #People
+SELECT * FROM #People ORDER BY Surname
 SELECT * FROM #Addresses
 SELECT * FROM #Addresses1
 SELECT * FROM #RegionWeighting
