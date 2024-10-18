@@ -24,11 +24,11 @@ GO
 -- Staging tables
 DROP TABLE IF EXISTS staging.InterestRate
 DROP TABLE IF EXISTS staging.Person
-DROP TABLE IF EXISTS staging.Address1
-DROP TABLE IF EXISTS staging.Address2
+DROP TABLE IF EXISTS staging.Address
 DROP TABLE IF EXISTS staging.RegionWeighting
 DROP FUNCTION IF EXISTS staging.fnPerson
 DROP PROCEDURE IF EXISTS staging.spPersonMarry
+DROP FUNCTION IF EXISTS staging.fnAddress
 
 DROP SCHEMA IF EXISTS staging
 GO
@@ -54,16 +54,8 @@ CREATE TABLE staging.Person (
 	[SpousePersonId] INT
 )
 
-CREATE TABLE staging.Address1 (
-	[AddressLine1] VARCHAR(250), 
-	[AddressLine2] VARCHAR(250), 
-	[Town] VARCHAR(250), 
-	[Region] VARCHAR(250), 
-	[Postcode] INT,
-	[Country] VARCHAR(50)
-)
-
-CREATE TABLE staging.Address2 (
+CREATE TABLE staging.Address (
+	[AddressId] INT,
 	[AddressLine1] VARCHAR(250), 
 	[AddressLine2] VARCHAR(250), 
 	[Town] VARCHAR(250), 
@@ -537,5 +529,106 @@ BEGIN
 
 		PRINT ('End marriage process...')
 
+END
+GO
+
+-- =============================================
+-- Author:		D.Barone
+-- Create date: 20241019
+-- Description:	Extract + transform addresses
+-- =============================================
+CREATE FUNCTION staging.fnAddress
+(
+	@json NVARCHAR(MAX)
+)
+RETURNS
+	@results TABLE 
+(
+	[AddressId] INT,
+	[AddressLine1] VARCHAR(250), 
+	[AddressLine2] VARCHAR(250), 
+	[Town] VARCHAR(250), 
+	[Region] VARCHAR(250), 
+	[Postcode] INT,
+	[PostcodeRegion] INT,
+	[Country] VARCHAR(50)
+)
+AS
+BEGIN
+
+		DECLARE @Address TABLE (
+			[AddressLine1] VARCHAR(250), 
+			[AddressLine2] VARCHAR(250), 
+			[Town] VARCHAR(250), 
+			[Region] VARCHAR(250), 
+			[Postcode] INT,
+			[Country] VARCHAR(50)
+		)
+
+		INSERT INTO
+			@Address (AddressLine1, AddressLine2, Town, Region, Postcode, Country)
+		SELECT
+			*
+		FROM OPENJSON(@json)
+		WITH 
+		(
+			[AddressLine1] VARCHAR(250), 
+			[AddressLine2] VARCHAR(250), 
+			[Town] VARCHAR(250), 
+			[Region] VARCHAR(250), 
+			[Postcode] INT,
+			[Country] VARCHAR(50)
+		)
+
+		-- Turn blanks into NULLs
+		UPDATE @Address SET AddressLine2 = NULLIF(AddressLine2, '')
+
+		-- Dbarone.Net.Fake generates a lot of distinct regions. We'll group by 1st 2 digits of
+		-- postcode, and use the 1st region for each group as a region. This will give us just
+		-- under 100 regions.
+		; WITH cteAddresses
+		AS
+		(
+			SELECT
+				ROW_NUMBER() OVER (ORDER BY Postcode) AS AddressId,
+				*,
+				CAST(Postcode/1000 AS INT) PostcodeRegion
+			FROM
+				@Address
+		)
+		, cteFirstAddressIdPerRegion
+		AS
+		(
+			SELECT
+				PostcodeRegion,
+				MIN(AddressId) DefaultRegionAddressId
+			FROM
+				cteAddresses
+			GROUP BY
+				PostcodeRegion
+		)
+
+		INSERT INTO @results
+		SELECT
+			a.AddressId,
+			a.AddressLine1,
+			a.AddressLine2,
+			a.Town,
+			a2.Region,
+			a.Postcode,
+			a.PostcodeRegion,
+			a.Country
+		FROM
+			cteAddresses a
+		INNER JOIN
+			cteFirstAddressIdPerRegion ar
+		ON
+			a.PostcodeRegion = ar.PostcodeRegion
+		INNER JOIN
+			cteAddresses a2
+		ON
+			ar.DefaultRegionAddressId = a2.AddressId
+
+	RETURN 
 END
 GO
