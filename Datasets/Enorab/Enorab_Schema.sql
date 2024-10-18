@@ -21,10 +21,59 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-DROP TABLE IF EXISTS #People
-DROP TABLE IF EXISTS #Addresses
-DROP TABLE IF EXISTS #Addresses1
-DROP TABLE IF EXISTS #RegionWeighting
+-- Staging tables
+DROP TABLE IF EXISTS staging.InterestRate
+DROP TABLE IF EXISTS staging.People
+DROP TABLE IF EXISTS staging.Addresses1
+DROP TABLE IF EXISTS staging.Addresses2
+DROP TABLE IF EXISTS staging.RegionWeighting
+
+DROP SCHEMA IF EXISTS staging
+GO
+CREATE SCHEMA staging
+GO
+
+CREATE TABLE staging.InterestRate (
+	RateId INT NOT NULL,
+	Rate FLOAT NOT NULL,
+	YearStart INT NOT NULL,
+	MonthStart INT NOT NULL
+)
+
+CREATE TABLE staging.People (
+	[PersonId] INT, 
+	[FirstName] varchar(50), 
+	[Surname] varchar(50), 
+	[Sex] varchar(1), 
+	[DoB] date
+)
+
+CREATE TABLE staging.Addresses1 (
+	[AddressLine1] VARCHAR(250), 
+	[AddressLine2] VARCHAR(250), 
+	[Town] VARCHAR(250), 
+	[Region] VARCHAR(250), 
+	[Postcode] INT,
+	[Country] VARCHAR(50)
+)
+
+CREATE TABLE staging.Addresses2 (
+	[AddressLine1] VARCHAR(250), 
+	[AddressLine2] VARCHAR(250), 
+	[Town] VARCHAR(250), 
+	[Region] VARCHAR(250), 
+	[Postcode] INT,
+	[PostcodeRegion] INT,
+	[Country] VARCHAR(50)
+)
+
+CREATE TABLE staging.RegionWeighting (
+	Region VARCHAR(50),
+	Weighting FLOAT,
+	HasBank BIT
+)
+
+-- Main tables
 DROP TABLE IF EXISTS Address
 DROP SEQUENCE IF EXISTS SeqBranch
 DROP TABLE IF EXISTS Branch
@@ -294,12 +343,6 @@ GO
 			YearStart INT NOT NULL,
 			MonthStart INT NOT NULL
 		);
-GO
-
-CREATE VIEW InterestRateView
-AS
-	SELECT * FROM InterestRate;
-
 GO
 
 INSERT INTO InterestRate 
