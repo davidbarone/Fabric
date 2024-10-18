@@ -23,9 +23,9 @@ GO
 
 -- Staging tables
 DROP TABLE IF EXISTS staging.InterestRate
-DROP TABLE IF EXISTS staging.People
-DROP TABLE IF EXISTS staging.Addresses1
-DROP TABLE IF EXISTS staging.Addresses2
+DROP TABLE IF EXISTS staging.Person
+DROP TABLE IF EXISTS staging.Address1
+DROP TABLE IF EXISTS staging.Address2
 DROP TABLE IF EXISTS staging.RegionWeighting
 
 DROP SCHEMA IF EXISTS staging
@@ -40,7 +40,7 @@ CREATE TABLE staging.InterestRate (
 	MonthStart INT NOT NULL
 )
 
-CREATE TABLE staging.People (
+CREATE TABLE staging.Person (
 	[PersonId] INT, 
 	[FirstName] varchar(50), 
 	[Surname] varchar(50), 
@@ -48,7 +48,7 @@ CREATE TABLE staging.People (
 	[DoB] date
 )
 
-CREATE TABLE staging.Addresses1 (
+CREATE TABLE staging.Address1 (
 	[AddressLine1] VARCHAR(250), 
 	[AddressLine2] VARCHAR(250), 
 	[Town] VARCHAR(250), 
@@ -57,7 +57,7 @@ CREATE TABLE staging.Addresses1 (
 	[Country] VARCHAR(50)
 )
 
-CREATE TABLE staging.Addresses2 (
+CREATE TABLE staging.Address2 (
 	[AddressLine1] VARCHAR(250), 
 	[AddressLine2] VARCHAR(250), 
 	[Town] VARCHAR(250), 
@@ -74,6 +74,7 @@ CREATE TABLE staging.RegionWeighting (
 )
 
 -- Main tables
+DROP TABLE IF EXISTS Person
 DROP TABLE IF EXISTS Address
 DROP SEQUENCE IF EXISTS SeqBranch
 DROP TABLE IF EXISTS Branch
