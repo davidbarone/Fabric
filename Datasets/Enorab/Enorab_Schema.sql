@@ -27,6 +27,8 @@ DROP TABLE IF EXISTS staging.Person
 DROP TABLE IF EXISTS staging.Address1
 DROP TABLE IF EXISTS staging.Address2
 DROP TABLE IF EXISTS staging.RegionWeighting
+DROP FUNCTION IF EXISTS staging.fnPerson
+DROP PROCEDURE IF EXISTS staging.spPersonMarry
 
 DROP SCHEMA IF EXISTS staging
 GO
@@ -45,7 +47,11 @@ CREATE TABLE staging.Person (
 	[FirstName] varchar(50), 
 	[Surname] varchar(50), 
 	[Sex] varchar(1), 
-	[DoB] date
+	[DoB] date,
+	[DaysAlive] INT,
+	[DoBEx] DATE,
+	[MarryingType] FLOAT,
+	[SpousePersonId] INT
 )
 
 CREATE TABLE staging.Address1 (
@@ -92,6 +98,7 @@ IF EXISTS (
 	AND xtype IN (N'FN', N'IF', N'TF')
 )
 DROP FUNCTION DateToInt
+
 
 IF EXISTS (
 	SELECT * FROM sysobjects WHERE id = object_id(N'DateTableView')
@@ -420,4 +427,115 @@ GO
 		 MAXVALUE 2147483647
 		 CACHE 
 
+GO
 
+----------------------------------------------------------------------------------------
+-- ROUTINES
+
+-- =============================================
+-- Author:		D.Barone
+-- Create date: 20241019
+-- Description:	Gets / formats person data from
+--				json string.
+-- =============================================
+
+CREATE FUNCTION staging.fnPerson
+(
+	@json NVARCHAR(MAX),
+	@ReferenceDate DATE,
+	@Today DATE
+)
+RETURNS TABLE 
+AS
+RETURN 
+(
+	SELECT
+		*,
+		DATEDIFF(DAY, DoB, @ReferenceDate) DaysAlive,
+		DATEADD(DAY, -DATEDIFF(DAY, DoB, @ReferenceDate), @Today) DoBEx,
+		CAST(NULL AS FLOAT) MarryingType,
+		CAST(NULL AS INT) SpousePersonId
+	FROM OPENJSON(@json)
+	WITH 
+	(
+		[PersonId] INT, 
+		[FirstName] varchar(50), 
+		[Surname] varchar(50), 
+		[Sex] varchar(1), 
+		[DoB] date
+	)
+)
+GO
+
+-- =============================================
+-- Author:		D.Barone
+-- Create date: 20241019
+-- Description:	Marry off people
+-- =============================================
+CREATE PROCEDURE staging.spPersonMarry
+	@marryingTypeRate FLOAT,
+	@marryWithinYearRange INT
+AS
+BEGIN
+
+		PRINT ('Begin marriage process...')
+
+		DECLARE @Random FLOAT = RAND(1)
+
+		-- Calculate marrying type for each person (0..1)
+		WHILE (1=1)
+		BEGIN
+			DECLARE @NextPersonId INT
+			SELECT @NextPersonId = MIN(PersonId) FROM staging.Person WHERE MarryingType IS NULL
+			IF @NextPersonId IS NULL
+			BEGIN
+				BREAK
+			END
+
+			SET @Random = RAND()
+
+			UPDATE staging.Person
+			SET MarryingType = @Random
+			WHERE PersonId = @NextPersonId
+		END
+
+		-- Marry people based on following rules:
+		-- - Person must be marrying type (i.e. above the @marryingTypeRate)
+		-- - Must find another person with same surname, within 10 years of age
+		-- - Must be > 18 years old
+		-- - one M, one F
+		WHILE (1=1)
+		BEGIN
+			DECLARE @SpouseMalePersonId INT = NULL
+			DECLARE @SpouseFemalePersonId INT = NULL
+
+			SELECT
+				@SpouseMalePersonId = A.SpouseMalePersonId,
+				@SpouseFemalePersonId = A.SpouseFemalePersonId
+			FROM
+			(
+				SELECT TOP 1
+					males.PersonId SpouseMalePersonId,
+					females.PersonId SpouseFemalePersonId
+				FROM
+					(SELECT * FROM staging.Person WHERE Sex = 'M' AND MarryingType > @MarryingTypeRate AND SpousePersonId IS NULL) males
+				INNER JOIN
+					(SELECT * FROM staging.Person WHERE Sex = 'F' AND MarryingType > @MarryingTypeRate AND SpousePersonId IS NULL) females
+				ON
+					males.Surname = females.Surname
+					AND DATEDIFF(YEAR, males.DoBEx, females.DoBEx) BETWEEN -@MarryWithinYearRange AND @MarryWithinYearRange
+			) A
+
+			IF @SpouseMalePersonId IS NULL OR @SpouseFemalePersonId IS NULL
+			BEGIN
+				BREAK
+			END
+
+			UPDATE staging.Person SET SpousePersonId = @SpouseFemalePersonId WHERE PersonId = @SpouseMalePersonId 
+			UPDATE staging.Person SET SpousePersonId = @SpouseMalePersonId WHERE PersonId = @SpouseFemalePersonId 
+		END
+
+		PRINT ('End marriage process...')
+
+END
+GO
