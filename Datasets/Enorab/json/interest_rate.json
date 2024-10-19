@@ -1,0 +1,208 @@
+[
+  {
+    "interest_rate_id": 1,
+    "interest_rate": 2.5,
+    "year_start": 0,
+    "month_start": 0
+  },
+  {
+    "interest_rate_id": 2,
+    "interest_rate": 2.25,
+    "year_start": 0,
+    "month_start": 3
+  },
+  {
+    "interest_rate_id": 3,
+    "interest_rate": 1.75,
+    "year_start": 0,
+    "month_start": 5
+  },
+  { "interest_rate_id": 4, "interest_rate": 1.5, "year_start": 1, "month_start": 2 },
+  {
+    "interest_rate_id": 5,
+    "interest_rate": 1.25,
+    "year_start": 1,
+    "month_start": 4
+  },
+  { "interest_rate_id": 6, "interest_rate": 1.0, "year_start": 1, "month_start": 7 },
+  {
+    "interest_rate_id": 7,
+    "interest_rate": 7.5e-1,
+    "year_start": 4,
+    "month_start": 2
+  },
+  {
+    "interest_rate_id": 8,
+    "interest_rate": 5.0e-1,
+    "year_start": 4,
+    "month_start": 5
+  },
+  {
+    "interest_rate_id": 9,
+    "interest_rate": 2.5e-1,
+    "year_start": 6,
+    "month_start": 9
+  },
+  {
+    "interest_rate_id": 10,
+    "interest_rate": 5.0e-1,
+    "year_start": 7,
+    "month_start": 10
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 1.0,
+    "year_start": 7,
+    "month_start": 11
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 1.5,
+    "year_start": 8,
+    "month_start": 2
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 2.0,
+    "year_start": 8,
+    "month_start": 3
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 2.25,
+    "year_start": 8,
+    "month_start": 4
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 2.5,
+    "year_start": 8,
+    "month_start": 5
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 2.75,
+    "year_start": 8,
+    "month_start": 6
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 3.0,
+    "year_start": 8,
+    "month_start": 8
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 3.25,
+    "year_start": 8,
+    "month_start": 10
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 3.5,
+    "year_start": 9,
+    "month_start": 0
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 3.75,
+    "year_start": 9,
+    "month_start": 2
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 4.0,
+    "year_start": 9,
+    "month_start": 5
+  },
+  {
+    "interest_rate_id": 11,
+    "interest_rate": 4.25,
+    "year_start": 9,
+    "month_start": 9
+  },
+  {
+    "interest_rate_id": 12,
+    "interest_rate": 4.50,
+    "year_start": 10,
+    "month_start": 2
+  },
+  {
+    "interest_rate_id": 13,
+    "interest_rate": 4.75,
+    "year_start": 10,
+    "month_start": 6
+  },
+  {
+    "interest_rate_id": 14,
+    "interest_rate": 4.75,
+    "year_start": 10,
+    "month_start": 11
+  },
+  {
+    "interest_rate_id": 15,
+    "interest_rate": 5.00,
+    "year_start": 11,
+    "month_start": 4
+  },
+  {
+    "interest_rate_id": 16,
+    "interest_rate": 4.75,
+    "year_start": 12,
+    "month_start": 0
+  },
+  {
+    "interest_rate_id": 17,
+    "interest_rate": 4.50,
+    "year_start": 12,
+    "month_start": 3
+  },
+  {
+    "interest_rate_id": 18,
+    "interest_rate": 4.25,
+    "year_start": 12,
+    "month_start": 5
+  },
+  {
+    "interest_rate_id": 19,
+    "interest_rate": 4.00,
+    "year_start": 12,
+    "month_start": 7
+  },
+  {
+    "interest_rate_id": 20,
+    "interest_rate": 3.75,
+    "year_start": 12,
+    "month_start": 9
+  },
+  {
+    "interest_rate_id": 21,
+    "interest_rate": 3.50,
+    "year_start": 12,
+    "month_start": 11
+  },
+  {
+    "interest_rate_id": 22,
+    "interest_rate": 3.25,
+    "year_start": 13,
+    "month_start": 5
+  },
+  {
+    "interest_rate_id": 23,
+    "interest_rate": 3.00,
+    "year_start": 14,
+    "month_start": 2
+  },
+  {
+    "interest_rate_id": 24,
+    "interest_rate": 2.75,
+    "year_start": 14,
+    "month_start": 6
+  },  
+  {
+    "interest_rate_id": 25,
+    "interest_rate": 2.50,
+    "year_start": 14,
+    "month_start": 8
+  }
+]

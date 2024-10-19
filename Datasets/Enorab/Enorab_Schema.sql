@@ -29,18 +29,20 @@ DROP FUNCTION IF EXISTS staging.fn_date_to_int
 DROP FUNCTION IF EXISTS staging.fn_dates
 DROP PROCEDURE IF EXISTS staging.sp_person_marry
 DROP SEQUENCE IF EXISTS seq_branch
-DROP VIEW IF EXISTS staing.vw_region
+DROP VIEW IF EXISTS staging.vw_region
 DROP VIEW IF EXISTS vw_date_table
 
+DROP TABLE IF EXISTS staging.date_table
 DROP TABLE IF EXISTS staging.interest_rate
-DROP TABLE IF EXISTS interest_rate
 DROP TABLE IF EXISTS staging.person
 DROP TABLE IF EXISTS staging.address
+DROP TABLE IF EXISTS interest_rate
 DROP TABLE IF EXISTS person
 DROP TABLE IF EXISTS [address]
 DROP TABLE IF EXISTS branch
-DROP TABLE IF EXISTS date_table
 DROP TABLE IF EXISTS interest_rate
+
+DROP PROCEDURE IF EXISTS sp_branch_open
 
 -- Drop schema
 DROP SCHEMA IF EXISTS staging
@@ -114,7 +116,7 @@ CREATE TABLE branch (
 )
 GO
 
-CREATE TABLE date_table(
+CREATE TABLE staging.date_table(
 	date_id INT NOT NULL,
 	calendar_date DATE NOT NULL,
 	calendar_date_name VARCHAR(11) NOT NULL,
@@ -149,7 +151,7 @@ CREATE TABLE date_table(
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [uq_date_table_calendar_date] ON date_table
+CREATE UNIQUE NONCLUSTERED INDEX [uq_date_table_calendar_date] ON staging.date_table
 (
 	calendar_date ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -477,33 +479,83 @@ GO
 -- Author:		David Barone
 -- Create date: 20241015
 -- Description:	Transforms interest rate data from json.
+-- Notes:		Repeats data for as long as history
+--              requires.
 -- =============================================
 CREATE FUNCTION staging.fn_interest_rate
 (
 	@json VARCHAR(MAX),
+	@start_date DATE,
 	@today DATE
 )
-RETURNS TABLE 
-AS
-RETURN 
+RETURNS
+	@results TABLE 
 (
-	WITH cteInterestRate
-	AS
-	(
-		SELECT
-			interest_rate_id,
-			interest_rate,
-			DATEADD(MONTH, ir.month_start, DATEADD(YEAR, ir.year_start, @today)) effective_date
-		FROM
-			staging.interest_rate ir
+	interest_rate_id INT,
+	interest_rate FLOAT,
+	year_start INT, 
+	month_start INT
+)
+AS
+BEGIN 
+
+	-- Get initial copy of interest rates from json
+	DECLARE @interest_rate TABLE (
+		interest_rate_id INT,
+		interest_rate FLOAT,
+		year_start INT,
+		month_start INT
 	)
 
+	INSERT INTO
+		@interest_rate (interest_rate_id, interest_rate, year_start, month_start)
 	SELECT
-		*,
-		(SELECT DATEADD(DD, -1, MIN(effective_date)) FROM cteInterestRate ir2 WHERE ir2.effective_date > ir.effective_date) [expiry_date]
-	FROM
-		cteInterestRate ir
-)
+		*
+	FROM OPENJSON(@json)
+	WITH 
+	(
+		interest_rate_id INT,
+		interest_rate FLOAT,
+		year_start INT,
+		month_start INT
+	)
+
+	-- Now we loop to fill up rates for entire history
+	WHILE (1=1)
+	BEGIN
+		DECLARE @interest_rate_id INT = 0
+		DECLARE @year_start INT = 0
+		DECLARE @month_start INT = 0
+
+		-- get last record from output
+		SELECT
+			@interest_rate_id = a.interest_rate_id,
+			@year_start = a.year_start,
+			@month_start = a.month_start
+		FROM
+		(
+			SELECT TOP(1) * FROM @results ORDER BY interest_rate_id
+		) a
+
+		IF (DATEDIFF(YEAR, @start_date, @today) < @year_start)
+		BEGIN
+			-- break once we have enough rates history
+			BREAK
+		END
+
+		INSERT INTO
+			@results (interest_rate_id, interest_rate, year_start, month_start)
+		SELECT
+			@interest_rate_id + interest_rate_id,
+			interest_rate,
+			CAST(((@year_start * 12) + @month_start + (year_start * 12) + month_start) / 12 AS INT) year_start,
+			CAST(((@year_start * 12) + @month_start + (year_start * 12) + month_start) % 12 AS INT) month_start
+		FROM
+			@interest_rate
+	END
+	RETURN
+END
+
 GO
 
 ---------------------------------------------
@@ -585,6 +637,103 @@ BEGIN
 END
 GO
 
+-- =============================================
+-- Object:		staging.sp_branch_open
+-- Type:		PROCEDURE
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	Randomly opens a branch. Max
+--              1 branch per region.
+-- =============================================
+CREATE PROCEDURE sp_branch_open
+	@processing_date DATE,
+	@new_branch_open_rate FLOAT,
+	@random_branch_open FLOAT,
+	@random_branch_weighting FLOAT
+AS
+BEGIN
+
+	DECLARE @new_bank_region VARCHAR(50)
+
+	SELECT
+		@new_bank_region =
+		(
+			SELECT
+				TOP(1) region
+			FROM
+				staging.vw_region r
+			WHERE
+				NOT EXISTS
+				(
+					SELECT
+						NULL
+					FROM
+						branch b
+					INNER JOIN
+						[address] a
+					ON
+						b.Branch_Address_Id = a.Address_Id
+						AND a.region = r.region
+				)
+				AND @random_branch_open > 1 - @new_branch_open_rate
+				AND @random_branch_open <= r.weighting
+		)
+	
+	IF @new_bank_region IS NOT NULL
+	BEGIN
+		-- Create new Branch Address
+		DECLARE @bank_address_Id INT
+		SELECT @bank_address_id = MIN(@bank_address_Id)
+		FROM
+			staging.address
+		WHERE
+			1=1
+			AND address_line_2 IS NULL	-- For branches, don't select an address that is a flat with 2 address lines
+			AND region = @new_bank_region
+
+		-- Possible for a region to only have single address, and it to be a flat only address - if so we don't bother creating the branch.
+		IF @bank_address_id IS NOT NULL
+		BEGIN
+			INSERT INTO Address (
+				address_id,
+				address_line_1,
+				address_line_2,
+				town,
+				region,
+				postcode,
+				country)
+			SELECT
+				address_id,
+				address_line_1,
+				address_line_2,
+				town,
+				region,
+				postcode,
+				country	
+			FROM
+				staging.address
+			WHERE address_id = @bank_address_Id
+
+			-- Create new branch
+			DECLARE @branch_id INT
+			SELECT @branch_id = NEXT VALUE FOR seq_branch
+
+			INSERT INTO branch (
+				branch_id,
+				branch_name,
+				branch_open_date_id,
+				branch_address_id)
+			SELECT
+				@branch_id,
+				@new_bank_region,
+				dbo.DateToInt(@processing_date),
+				@bank_address_Id
+		END
+	END
+
+END
+GO
+
 ---------------------------------------------
 -- Views
 ---------------------------------------------
@@ -608,7 +757,7 @@ AS
 		DATEDIFF(QQ, calendar_date, GETDATE()) calendar_quarters_ago,
 		DATEDIFF(YY, calendar_date, GETDATE()) calendar_years_ago
 	FROM
-		date_table
+		staging.date_table
 GO
 
 -- =============================================
