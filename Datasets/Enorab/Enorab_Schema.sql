@@ -422,6 +422,61 @@ GO
 GO
 
 ----------------------------------------------------------------------------------------
+-- Views
+----------------------------------------------------------------------------------------
+
+------------------------------------------
+-- RegionView
+--
+-- Information about each region
+------------------------------------------
+;WITH cteRegions
+AS
+(
+	SELECT
+		Region,
+		COUNT(1) Weighting
+	FROM
+		staging.Address
+	GROUP BY
+		Region
+)
+, cteRegionBranches
+AS
+(
+	SELECT
+		a.Region,
+		COUNT(b.BranchId) Branches
+	FROM
+		Branch b
+	INNER JOIN
+		Address a
+	ON
+		b.BranchAddressId = a.AddressId
+	GROUP BY
+		a.Region
+)
+, cteMaxWeighting
+AS
+(
+	SELECT MAX(Weighting) MaxWeighting FROM cteRegions
+)
+
+SELECT
+	r.Region,
+	CAST(Weighting AS FLOAT) / mw.MaxWeighting Weighting	-- convert to number in range (0..1),
+FROM
+	cteRegions r
+CROSS JOIN
+	cteMaxWeighting mw
+LEFT OUTER JOIN
+	cteRegionBranches rb
+ON
+	r.Region = rb.Region
+
+GO
+
+----------------------------------------------------------------------------------------
 -- ROUTINES
 
 -- =============================================

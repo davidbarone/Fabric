@@ -72,7 +72,7 @@ BEGIN
 		-- Url: https://github.com/davidbarone/Dbarone.Net.Fake
 		DECLARE @personJson VARCHAR(MAX)
 		SELECT @personJson=BulkColumn
-		FROM OPENROWSET (BULK '.\people.json', SINGLE_CLOB) import
+		FROM OPENROWSET (BULK 'E:\david\github\Power-BI\Datasets\Enorab\person.json', SINGLE_CLOB) import
 		
 		INSERT INTO staging.Person SELECT *	FROM staging.fnPerson(@personJson, @referenceDate, @today)
 
@@ -84,28 +84,29 @@ BEGIN
 		-- 5.1 Load json data
 		DECLARE @addressJson VARCHAR(MAX)
 		SELECT @addressJson=BulkColumn
-		FROM OPENROWSET (BULK '.\address.json', SINGLE_CLOB) import
+		FROM OPENROWSET (BULK 'E:\david\github\Power-BI\Datasets\Enorab\address.json', SINGLE_CLOB) import
 
+		INSERT INTO staging.Address SELECT * FROM staging.fnAddress(@personJson)
+	END
 
-
-
+	-- 6. Region Weighting (weight the regions based on number of addresses in that region)
+	BEGIN
 		INSERT INTO
-			#RegionWeighting
+			staging.RegionWeighting
 		SELECT
 			Region,
 			COUNT(1) Weighting,
 			0 HasBank
 		FROM
-			#Addresses1
+			staging.Address
 		GROUP BY
 			Region
 
 		-- Make the weighting a number between 0 and 1 (with 1 representing the region with the most addresses, and all other weightings relative to this).;
 		UPDATE
-			#RegionWeighting
+			staging.RegionWeighting
 		SET
 			Weighting = CAST(Weighting AS FLOAT) / (SELECT MAX(Weighting) FROM #RegionWeighting)
-
 	END
 
 	-------------------------------------
@@ -159,10 +160,7 @@ BEGIN
 		SELECT 11, 4.00, 9, 5
 		UNION ALL
 		SELECT 11, 4.25, 9, 9
-
-		
 	END
-
 END
 
 -------------------------------------
