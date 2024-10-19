@@ -521,28 +521,11 @@ BEGIN
 	)
 
 	-- Now we loop to fill up rates for entire history
+	DECLARE @interest_rate_id INT = 0
+	DECLARE @year_start INT = 0
+	DECLARE @month_start INT = 0
 	WHILE (1=1)
 	BEGIN
-		DECLARE @interest_rate_id INT = 0
-		DECLARE @year_start INT = 0
-		DECLARE @month_start INT = 0
-
-		-- get last record from output
-		SELECT
-			@interest_rate_id = a.interest_rate_id,
-			@year_start = a.year_start,
-			@month_start = a.month_start
-		FROM
-		(
-			SELECT TOP(1) * FROM @results ORDER BY interest_rate_id
-		) a
-
-		IF (DATEDIFF(YEAR, @start_date, @today) < @year_start)
-		BEGIN
-			-- break once we have enough rates history
-			BREAK
-		END
-
 		INSERT INTO
 			@results (interest_rate_id, interest_rate, year_start, month_start)
 		SELECT
@@ -552,6 +535,23 @@ BEGIN
 			CAST(((@year_start * 12) + @month_start + (year_start * 12) + month_start) % 12 AS INT) month_start
 		FROM
 			@interest_rate
+
+		-- get last record from output
+		SELECT
+			@interest_rate_id = a.interest_rate_id,
+			@year_start = a.year_start,
+			@month_start = a.month_start
+		FROM
+		(
+			SELECT TOP(1) * FROM @results ORDER BY interest_rate_id DESC
+		) a
+
+		IF (DATEDIFF(YEAR, @start_date, @today) < @year_start)
+		BEGIN
+			-- break once we have enough rates history
+			BREAK
+		END
+
 	END
 	RETURN
 END
