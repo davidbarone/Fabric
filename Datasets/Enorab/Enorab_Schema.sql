@@ -23,12 +23,14 @@ GO
 
 -- Staging tables
 DROP TABLE IF EXISTS staging.InterestRate
+DROP TABLE IF EXISTS InterestRate
 DROP TABLE IF EXISTS staging.Person
 DROP TABLE IF EXISTS staging.Address
 DROP TABLE IF EXISTS staging.RegionWeighting
 DROP FUNCTION IF EXISTS staging.fnPerson
 DROP PROCEDURE IF EXISTS staging.spPersonMarry
 DROP FUNCTION IF EXISTS staging.fnAddress
+DROP FUNCTION IF EXISTS staging.fnInterestRate
 
 DROP SCHEMA IF EXISTS staging
 GO
@@ -40,6 +42,13 @@ CREATE TABLE staging.InterestRate (
 	Rate FLOAT NOT NULL,
 	YearStart INT NOT NULL,
 	MonthStart INT NOT NULL
+)
+
+CREATE TABLE InterestRate (
+	RateId INT NOT NULL,
+	Rate FLOAT NOT NULL,
+	EffectiveDate DATE NOT NULL,
+	ExpiryDate DATE NOT NULL
 )
 
 CREATE TABLE staging.Person (
@@ -686,4 +695,36 @@ BEGIN
 
 	RETURN 
 END
+GO
+
+-- =============================================
+-- Author:		D.Barone
+-- Create date: 20241019
+-- Description:	Calculates the interest rate table.
+-- =============================================
+CREATE FUNCTION staging.fnInterestRate 
+(
+	@Today DATE
+)
+RETURNS TABLE 
+AS
+RETURN 
+(
+	WITH cteInterestRate
+	AS
+	(
+		SELECT
+			InterestRateId,
+			InterestRate,
+			DATEADD(MONTH, ir.MonthStart, DATEADD(YEAR, ir.YearStart, @Today)) EffectiveDate
+		FROM
+			staging.InterestRate ir
+	)
+
+	SELECT
+		*,
+		(SELECT MIN(EffectiveDate) - 1 FROM cteInterestRate ir2 WHERE ir2.EffectiveDate > ir.EffectiveDate) ExpiryDate
+	FROM
+		cteInterestRate ir
+)
 GO
