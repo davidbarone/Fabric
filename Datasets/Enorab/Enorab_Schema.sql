@@ -28,6 +28,8 @@ DROP FUNCTION IF EXISTS staging.fn_interest_rate
 DROP FUNCTION IF EXISTS staging.fn_date_to_int
 DROP FUNCTION IF EXISTS staging.fn_dates
 DROP PROCEDURE IF EXISTS staging.sp_person_marry
+DROP PROCEDURE IF EXISTS sp_calculate_interest_rate
+
 DROP SEQUENCE IF EXISTS seq_branch
 DROP VIEW IF EXISTS staging.vw_region
 DROP VIEW IF EXISTS vw_date_table
@@ -64,11 +66,9 @@ CREATE TABLE staging.interest_rate (
 )
 GO
 
-CREATE TABLE interest_rate (
-	interest_rate_id INT NOT NULL,
-	interest_rate FLOAT NOT NULL,
-	effective_date DATE NOT NULL,
-	[expiry_date] DATE NOT NULL
+CREATE TABLE dbo.interest_rate (
+	calendar_date DATE NOT NULL,
+	interest_rate FLOAT NOT NULL
 )
 GO
 
@@ -730,6 +730,60 @@ BEGIN
 				@bank_address_Id
 		END
 	END
+
+END
+GO
+
+-- =============================================
+-- Object:		sp_calculate_interest_rate
+-- Type:		PROCEDURE
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	Writes a daily interest rate.
+-- =============================================
+CREATE PROCEDURE sp_calculate_interest_rate
+	@processing_date DATE,
+	@start_date DATE
+AS
+BEGIN
+
+	DECLARE @interest_rate FLOAT
+
+	-- months from start date:
+	DECLARE @months INT = DATEDIFF(MONTH, @start_date, @processing_date)
+	
+	;WITH cteRates
+	AS
+	(
+		SELECT
+			*,
+			(ir.year_start * 12) + ir.month_start total_month
+		FROM
+			staging.interest_rate ir
+	)
+
+	, cteAddNext
+	AS
+	(
+		SELECT
+			*,
+			LEAD(total_month, 1) OVER (ORDER BY interest_rate_id) next_total_month
+		FROM
+			cteRates
+	)
+
+	SELECT
+		@interest_rate = interest_rate
+	FROM
+		cteAddNext ir
+	WHERE
+		ir.total_month <= @months AND
+		ir.next_total_month > @months
+
+	INSERT INTO
+		interest_rate (calendar_date, interest_rate)
+	SELECT
+		@processing_date, @interest_rate
 
 END
 GO
