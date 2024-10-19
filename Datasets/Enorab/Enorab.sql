@@ -89,26 +89,6 @@ BEGIN
 		INSERT INTO staging.Address SELECT * FROM staging.fnAddress(@personJson)
 	END
 
-	-- 6. Region Weighting (weight the regions based on number of addresses in that region)
-	BEGIN
-		INSERT INTO
-			staging.RegionWeighting
-		SELECT
-			Region,
-			COUNT(1) Weighting,
-			0 HasBank
-		FROM
-			staging.Address
-		GROUP BY
-			Region
-
-		-- Make the weighting a number between 0 and 1 (with 1 representing the region with the most addresses, and all other weightings relative to this).;
-		UPDATE
-			staging.RegionWeighting
-		SET
-			Weighting = CAST(Weighting AS FLOAT) / (SELECT MAX(Weighting) FROM #RegionWeighting)
-	END
-
 	-------------------------------------
 	-- FINAL TABLES
 	--
