@@ -111,7 +111,8 @@ BEGIN
 		SELECT @person_json = BulkColumn
 		FROM OPENROWSET (BULK 'E:\david\github\Power-BI\datasets\enorab\json\person.json', SINGLE_CLOB) import
 		
-		INSERT INTO staging.Person SELECT *	FROM staging.fn_person(@person_json, @reference_date, @today)
+		TRUNCATE TABLE staging.person
+		INSERT INTO staging.person SELECT *	FROM staging.fn_person(@person_json, @reference_date, @today)
 		EXEC staging.sp_person_marry @marrying_rate, @marry_within_year_range
 	END
 
@@ -122,7 +123,8 @@ BEGIN
 		SELECT @address_json = BulkColumn
 		FROM OPENROWSET (BULK 'E:\david\github\Power-BI\datasets\enorab\json\address.json', SINGLE_CLOB) import
 
-		INSERT INTO staging.address SELECT * FROM staging.fn_address(@person_json)
+		TRUNCATE TABLE staging.address
+		INSERT INTO staging.address SELECT * FROM staging.fn_address(@address_json)
 	END
 
 	-- 3.4 Interest rate table
