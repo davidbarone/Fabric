@@ -1,6 +1,6 @@
 /*********************************************************************
-Enorab_schema.sql:	A script to generate a ficticious bank dataset.
-
+module:		enorab_schema.sql:
+Purpose:	Generates schema for enorab - a ficticious bank dataset.
 Author:		David Barone
 Created:	13/10/2024
 Url:		https://github.com/davidbarone/Power-BI/tree/main/Datasets/Enorab 
@@ -11,7 +11,7 @@ Version History:
 Version	Date		Author			Details
 1.0		13/10/2024	David Barone	Script created
 *********************************************************************/
-USE Enorab
+USE enorab
 GO
 
 /****** Object:  UserDefinedFunction [dbo].[fnGetDates]    Script Date: 8/10/2022 3:59:25 PM ******/
@@ -21,100 +21,165 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
--- Staging tables
-DROP TABLE IF EXISTS staging.InterestRate
-DROP TABLE IF EXISTS InterestRate
-DROP TABLE IF EXISTS staging.Person
-DROP TABLE IF EXISTS staging.Address
-DROP TABLE IF EXISTS staging.RegionWeighting
-DROP FUNCTION IF EXISTS staging.fnPerson
-DROP PROCEDURE IF EXISTS staging.spPersonMarry
-DROP FUNCTION IF EXISTS staging.fnAddress
-DROP FUNCTION IF EXISTS staging.fnInterestRate
+-- Drop objects
+DROP FUNCTION IF EXISTS staging.fn_person
+DROP FUNCTION IF EXISTS staging.fn_address
+DROP FUNCTION IF EXISTS staging.fn_interest_rate
+DROP FUNCTION IF EXISTS staging.fn_date_to_int
+DROP FUNCTION IF EXISTS staging.fn_dates
+DROP PROCEDURE IF EXISTS staging.sp_person_marry
+DROP SEQUENCE IF EXISTS seq_branch
+DROP VIEW IF EXISTS staing.vw_region
+DROP VIEW IF EXISTS vw_date_table
 
+DROP TABLE IF EXISTS staging.interest_rate
+DROP TABLE IF EXISTS interest_rate
+DROP TABLE IF EXISTS staging.person
+DROP TABLE IF EXISTS staging.address
+DROP TABLE IF EXISTS person
+DROP TABLE IF EXISTS [address]
+DROP TABLE IF EXISTS branch
+DROP TABLE IF EXISTS date_table
+DROP TABLE IF EXISTS interest_rate
+
+-- Drop schema
 DROP SCHEMA IF EXISTS staging
 GO
+
+-- Create schema
 CREATE SCHEMA staging
 GO
 
-CREATE TABLE staging.InterestRate (
-	RateId INT NOT NULL,
-	Rate FLOAT NOT NULL,
-	YearStart INT NOT NULL,
-	MonthStart INT NOT NULL
+---------------------------------------------
+-- Tables
+---------------------------------------------
+
+CREATE TABLE staging.interest_rate (
+	interest_rate_id INT NOT NULL,
+	interest_rate FLOAT NOT NULL,
+	year_start INT NOT NULL,
+	month_start INT NOT NULL
 )
-
-CREATE TABLE InterestRate (
-	RateId INT NOT NULL,
-	Rate FLOAT NOT NULL,
-	EffectiveDate DATE NOT NULL,
-	ExpiryDate DATE NOT NULL
-)
-
-CREATE TABLE staging.Person (
-	[PersonId] INT, 
-	[FirstName] varchar(50), 
-	[Surname] varchar(50), 
-	[Sex] varchar(1), 
-	[DoB] date,
-	[DaysAlive] INT,
-	[DoBEx] DATE,
-	[MarryingType] FLOAT,
-	[SpousePersonId] INT
-)
-
-CREATE TABLE staging.Address (
-	[AddressId] INT,
-	[AddressLine1] VARCHAR(250), 
-	[AddressLine2] VARCHAR(250), 
-	[Town] VARCHAR(250), 
-	[Region] VARCHAR(250), 
-	[Postcode] INT,
-	[PostcodeRegion] INT,
-	[Country] VARCHAR(50)
-)
-
-CREATE TABLE staging.RegionWeighting (
-	Region VARCHAR(50),
-	Weighting FLOAT,
-	HasBank BIT
-)
-
--- Main tables
-DROP TABLE IF EXISTS Person
-DROP TABLE IF EXISTS Address
-DROP SEQUENCE IF EXISTS SeqBranch
-DROP TABLE IF EXISTS Branch
-DROP TABLE IF EXISTS DateTable
-DROP TABLE IF EXISTS InterestRate
-
-IF EXISTS (
-	SELECT * FROM sysobjects WHERE id = object_id(N'fnGetDates')
-	AND xtype IN (N'FN', N'IF', N'TF')
-)
-DROP FUNCTION fnGetDates
-
-IF EXISTS (
-	SELECT * FROM sysobjects WHERE id = object_id(N'DateToInt')
-	AND xtype IN (N'FN', N'IF', N'TF')
-)
-DROP FUNCTION DateToInt
-
-
-IF EXISTS (
-	SELECT * FROM sysobjects WHERE id = object_id(N'DateTableView')
-	AND xtype IN (N'V')
-)
-DROP VIEW DateTableView
-
 GO
 
+CREATE TABLE interest_rate (
+	interest_rate_id INT NOT NULL,
+	interest_rate FLOAT NOT NULL,
+	effective_date DATE NOT NULL,
+	[expiry_date] DATE NOT NULL
+)
+GO
+
+CREATE TABLE staging.person (
+	person_id INT, 
+	first_name varchar(50), 
+	surname varchar(50), 
+	sex varchar(1), 
+	date_of_birth date,
+	days_alive INT,
+	date_of_birth_ex DATE,
+	marrying_type FLOAT,
+	spouse_person_id INT
+)
+GO
+
+CREATE TABLE staging.address (
+	address_id INT,
+	address_line_1 VARCHAR(250), 
+	address_line_2 VARCHAR(250), 
+	town VARCHAR(250), 
+	region VARCHAR(250), 
+	postcode INT,
+	postcode_region INT,
+	country VARCHAR(50)
+)
+GO
+
+CREATE TABLE address (
+	address_id INT NOT NULL,
+	address_line_1 VARCHAR(250),
+	address_line_2 VARCHAR(250),
+	town VARCHAR(50),
+	region VARCHAR(50),
+	postcode INT,
+	country VARCHAR(50)
+)
+GO
+
+CREATE TABLE branch (
+	branch_id SMALLINT NOT NULL,
+	branch_name VARCHAR(50) NOT NULL,
+	branch_address_id INT NOT NULL,
+	branch_open_date_id INT NOT NULL
+)
+GO
+
+CREATE TABLE date_table(
+	date_id INT NOT NULL,
+	calendar_date DATE NOT NULL,
+	calendar_date_name VARCHAR(11) NOT NULL,
+	calendar_day_of_week SMALLINT NOT NULL,
+	calendar_day_of_iso_week SMALLINT NOT NULL,
+	calendar_day_of_year INT NOT NULL,
+	calendar_week_start DATE NOT NULL,
+	calendar_week_end DATE NOT NULL,
+	calendar_iso_week_start DATE NOT NULL,
+	calendar_iso_week_end DATE NOT NULL,
+	calendar_day SMALLINT NOT NULL,
+	calendar_day_name VARCHAR(3) NOT NULL,
+	calendar_week_of_month SMALLINT NOT NULL,
+	calendar_week_of_year SMALLINT NOT NULL,
+	calendar_iso_week_of_year SMALLINT NOT NULL,
+	calendar_month SMALLINT NOT NULL,
+	calendar_month_name VARCHAR(3) NOT NULL,
+	calendar_quarter SMALLINT NOT NULL,
+	calendar_semester SMALLINT NOT NULL,
+	calendar_year SMALLINT NOT NULL,
+	calendar_year_month INT NOT NULL,
+	calendar_year_month_name VARCHAR(6) NOT NULL,
+	alt_calendar_week_of_year SMALLINT NOT NULL,
+	alt_calendar_month SMALLINT NOT NULL,
+	alt_calendar_quarter SMALLINT NOT NULL,
+	alt_calender_semester SMALLINT NOT NULL,
+	alt_calendar_year SMALLINT NOT NULL,
+	alt_calender_year_month INT NOT NULL,
+ CONSTRAINT [pk_date_table] PRIMARY KEY CLUSTERED 
+(
+	date_id ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [uq_date_table_calendar_date] ON date_table
+(
+	calendar_date ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
+---------------------------------------------
+-- Sequences
+---------------------------------------------
+
+CREATE SEQUENCE seq_branch
+ AS [int]
+ START WITH 1
+ INCREMENT BY 1
+ MINVALUE 1
+ MAXVALUE 2147483647
+ CACHE 
+GO
+
+---------------------------------------------
+-- Functions
+---------------------------------------------
+
 -- =============================================
+-- Object:		staging.fn_date_to_int
+-- Type:		FUNCTION
 -- Author:		David Barone
 -- Create date: 20241015
--- Description:	Converts Date To Int
+-- Description:	Converts Date To Int.
 -- =============================================
-CREATE FUNCTION DateToInt 
+CREATE FUNCTION staging.fn_date_to_int 
 (
 	@Date DATE
 )
@@ -125,99 +190,91 @@ BEGIN
 END;
 GO	
 
-----------------------------------------------------------
--- GetDates()
---
--- This TVF can be used to initialse a date dimension.
---
--- Includes calendar and fiscal (July-June) variants.
-----------------------------------------------------------
-CREATE FUNCTION [dbo].[fnGetDates] 
+-- =============================================
+-- Object:		fn_dates
+-- Type:		FUNCTION
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	Gets dates.
+-- =============================================
+CREATE FUNCTION staging.fn_dates 
 (   
-    @StartDate DATETIME,
-    @EndDate DATETIME
+    @start_date DATETIME,
+    @end_date DATETIME
 )
-RETURNS @DateTable TABLE (
-	
-	-- Standard Calendar
-	
-	[DateKey] [int] NOT NULL,
-	[CalendarDate] [date] NOT NULL,
-	[CalendarDateName] [varchar](11) NOT NULL,
-	[CalendarDayOfWeek] [int] NOT NULL,
-	[CalendarDayOfIsoWeek] [int] NOT NULL,
-	[CalendarDayOfYear] [int] NOT NULL,
-	[CalendarWeekStart] [date] NOT NULL,
-	[CalendarWeekEnd] [date] NOT NULL,
-	[CalendarIsoWeekStart] [date] NOT NULL,
-	[CalendarIsoWeekEnd] [date] NOT NULL,
-	[CalendarDay] [int] NOT NULL,
-	[CalendarDayName] [varchar](3) NOT NULL,
-	[CalendarWeekOfMonth] [int] NOT NULL,
-	[CalendarWeekOfYear] [int] NOT NULL,
-	[CalendarIsoWeekOfYear] [int] NOT NULL,
-	[CalendarMonth] [int] NOT NULL,
-	[CalendarMonthName] [varchar](3) NOT NULL,
-	[CalendarQuarter] [int] NOT NULL,
-	[CalendarSemester] [int] NOT NULL,
-	[CalendarYear] [int] NOT NULL,
-	[CalendarYearMonth] [int] NOT NULL,
-	[CalendarYearMonthName] [varchar](6) NOT NULL,
-
-	-- Alternate / Fiscal Calendar (1-Jul TO 30-Jun)
-
-	[AltCalendarWeekOfYear] [int] NOT NULL,
-	[AltCalendarMonth] [int] NOT NULL,
-	[AltCalendarQuarter] [int] NOT NULL,
-	[AltCalenderSemester] [int] NOT NULL,
-	[AltCalendarYear] [int] NOT NULL,
-	[AltCalenderYearMonth] [int] NOT NULL
+RETURNS @date_table TABLE (
+	date_id INT NOT NULL,
+	calendar_date DATE NOT NULL,
+	calendar_date_name VARCHAR(11) NOT NULL,
+	calendar_day_of_week SMALLINT NOT NULL,
+	calendar_day_of_iso_week SMALLINT NOT NULL,
+	calendar_day_of_year INT NOT NULL,
+	calendar_week_start DATE NOT NULL,
+	calendar_week_end DATE NOT NULL,
+	calendar_iso_week_start DATE NOT NULL,
+	calendar_iso_week_end DATE NOT NULL,
+	calendar_day SMALLINT NOT NULL,
+	calendar_day_name VARCHAR(3) NOT NULL,
+	calendar_week_of_month SMALLINT NOT NULL,
+	calendar_week_of_year SMALLINT NOT NULL,
+	calendar_iso_week_of_year SMALLINT NOT NULL,
+	calendar_month SMALLINT NOT NULL,
+	calendar_month_name VARCHAR(3) NOT NULL,
+	calendar_quarter SMALLINT NOT NULL,
+	calendar_semester SMALLINT NOT NULL,
+	calendar_year SMALLINT NOT NULL,
+	calendar_year_month INT NOT NULL,
+	calendar_year_month_name VARCHAR(6) NOT NULL,
+	alt_calendar_week_of_year SMALLINT NOT NULL,
+	alt_calendar_month SMALLINT NOT NULL,
+	alt_calendar_quarter SMALLINT NOT NULL,
+	alt_calender_semester SMALLINT NOT NULL,
+	alt_calendar_year SMALLINT NOT NULL,
+	alt_calender_year_month INT NOT NULL
 )
 AS
 BEGIN 
 
-	/*
-	DECLARE @StartDate DATETIME
-	DECLARE @EndDate DATETIME
-	SET @StartDate = '01-JAN-2000'
-	SET @EndDate = '31-DEC-2039'
-	*/
-	SET @StartDate = CAST(CAST(@StartDate AS DATE) AS DATETIME)
-	SET @EndDate = CAST(CAST(@EndDate AS DATE) AS DATETIME)
+	SET @start_date = CAST(CAST(@start_date AS DATE) AS DATETIME)
+	SET @end_date = CAST(CAST(@end_date AS DATE) AS DATETIME)
 
 	;WITH cteDates AS
-    ( 
-     select 1 AS Number,
-            @StartDate CalendarDate
-     where  @StartDate <= @EndDate
-     union all 
-     select Number+1,
-            CalendarDate + 1 
-     from    cteDates    
-     where   CalendarDate + 1 < = @EndDate
+    (
+		SELECT
+			1 AS number,
+			@start_date calendar_date
+		WHERE
+			@start_date <= @end_date
+		UNION ALL
+		SELECT
+			number + 1,
+			calendar_date + 1
+		FROM
+			cteDates
+		WHERE
+			calendar_date + 1 <= @end_date
     ),
 
 	-- ADD KEYS, AND CALENDAR-DAY-BASED ATTRIBUTES
 	cteCalendar AS
 	(
 		SELECT
-			(YEAR(D.CalendarDate) * 10000) + (MONTH(D.CalendarDate) * 100) + DAY(D.CalendarDate) AS DateKey,
-			CAST(D.CalendarDate AS DATE) CalendarDate,
-			CONVERT(VARCHAR(11), D.CalendarDate, 113) AS CalendarDateName,
-			DATEPART(weekday, D.CalendarDate) AS CalendarDayOfWeek,
+			(YEAR(d.calendar_date) * 10000) + (MONTH(d.calendar_date) * 100) + DAY(d.calendar_date) AS date_id,
+			CAST(d.calendar_date AS DATE) calendar_date,
+			CONVERT(VARCHAR(11), d.calendar_date, 113) AS calendar_date_name,
+			DATEPART(WEEKDAY, d.calendar_date) AS calendar_day_of_week,
 			CASE
-				WHEN (DATEPART(weekday, D.CalendarDate)-1) % 7 = 0 then 7
-				ELSE (DATEPART(weekday, D.CalendarDate)-1) % 7
-			END AS CalendarDayOfIsoWeek,
-			DATEPART(dy, D.CalendarDate) AS CalendarDayOfYear,
-			CAST(D.CalendarDate- DATEPART(weekday, D.CalendarDate) + 1 AS DATE) AS CalendarWeekStart,
-			CAST(D.CalendarDate - DATEPART(weekday, D.CalendarDate) + 7 AS DATE) AS CalendarWeekEnd,
-			DATEADD(dd, 1, CAST(D.CalendarDate- DATEPART(weekday, D.CalendarDate) + 1 AS DATE)) AS CalendarIsoWeekStart,
-			DATEADD(dd, 1, CAST(D.CalendarDate - DATEPART(weekday, D.CalendarDate) + 7 AS DATE)) AS CalendarIsoWeekEnd,
+				WHEN (DATEPART(WEEKDAY, d.calendar_date)-1) % 7 = 0 then 7
+				ELSE (DATEPART(WEEKDAY, d.calendar_date)-1) % 7
+			END AS calendar_day_of_iso_week,
+			DATEPART(DY, d.calendar_date) AS calendar_day_of_year,
+			CAST(d.calendar_date- DATEPART(WEEKDAY, d.calendar_date) + 1 AS DATE) AS calendar_week_start,
+			CAST(d.calendar_date - DATEPART(WEEKDAY, d.calendar_date) + 7 AS DATE) AS calendar_week_end,
+			DATEADD(DD, 1, CAST(d.calendar_date- DATEPART(WEEKDAY, d.calendar_date) + 1 AS DATE)) AS calendar_iso_week_start,
+			DATEADD(DD, 1, CAST(d.calendar_date - DATEPART(WEEKDAY, d.calendar_date) + 7 AS DATE)) AS calendar_iso_week_end,
+			DATEPART(DAY, d.calendar_date) AS calendar_day,
 
-			DATEPART(day, D.CalendarDate) AS CalendarDay,
-
-			CASE(DATEPART(weekday, D.CalendarDate))
+			CASE(DATEPART(WEEKDAY, d.calendar_date))
 			WHEN 1 THEN 'Sun'
 			WHEN 2 THEN 'Mon'
 			WHEN 3 THEN 'Tue'
@@ -225,14 +282,14 @@ BEGIN
 			WHEN 5 THEN 'Thu'
 			WHEN 6 THEN 'Fri'
 			WHEN 7 THEN 'Sat'
-			END AS CalendarDayName,
+			END AS calendar_day_name,
 
-			1 + (DATEPART(DAY, D.CalendarDate)/7) AS CalendarWeekOfMonth,
-			DATEPART(week, D.CalendarDate) AS CalendarWeekOfYear,
-			DATEPART(ISO_WEEK, D.CalendarDate) AS CalendarIsoWeekOfYear,
-			MONTH(D.CalendarDate) AS CalendarMonth,
+			1 + (DATEPART(DAY, d.calendar_date)/7) AS calendar_week_of_month,
+			DATEPART(WEEK, d.calendar_date) AS calendar_week_of_year,
+			DATEPART(ISO_WEEK, d.calendar_date) AS calendar_iso_week_of_year,
+			MONTH(d.calendar_date) AS calendar_month,
 
-			CASE DATEPART(m, D.CalendarDate)
+			CASE DATEPART(M, d.calendar_date)
 			WHEN 1 THEN 'Jan'
 			WHEN 2 THEN 'Feb'
 			WHEN 3 THEN 'Mar'
@@ -245,13 +302,13 @@ BEGIN
 			WHEN 10 THEN 'Oct'
 			WHEN 11 THEN 'Nov'
 			WHEN 12 THEN 'Dec'
-			END AS CalendarMonthName,
+			END AS calendar_month_name,
 
-			DATEPART(q, D.CalendarDate) AS CalendarQuarter,
-			CASE WHEN MONTH(D.CalendarDate) <=6 THEN 1 ELSE 2 END AS CalendarSemester,
-			YEAR(D.CalendarDate) AS CalendarYear,
-			(YEAR(D.CalendarDate) * 100) + MONTH(D.CalendarDate) AS CalendarYearMonth,
-			SUBSTRING('JanFebMarAprMayJunJulAugSepOctNovDec', ((MONTH(D.CalendarDate)-1)*3)+1,3) + '-' + RIGHT(CAST(YEAR(D.CalendarDate) AS VARCHAR(4)), 2) CalendarYearMonthName
+			DATEPART(q, d.calendar_date) AS calendar_quarter,
+			CASE WHEN MONTH(d.calendar_date) <=6 THEN 1 ELSE 2 END AS calendar_semester,
+			YEAR(d.calendar_date) AS calendar_year,
+			(YEAR(d.calendar_date) * 100) + MONTH(d.calendar_date) AS calendar_year_month,
+			SUBSTRING('JanFebMarAprMayJunJulAugSepOctNovDec', ((MONTH(d.calendar_date)-1)*3)+1,3) + '-' + RIGHT(CAST(YEAR(d.calendar_date) AS VARCHAR(4)), 2) calendar_year_month_name
 		FROM    cteDates D
 	)
 	
@@ -260,246 +317,34 @@ BEGIN
 	(
 		SELECT 
 			*,
-			1 + ((CalendarWeekOfYear + 25) % 52) AltCalendarWeekOfYear,
-			1 + ((CalendarMonth+ 5) % 12) AltCalendarMonth,
-			1 + ((CalendarQuarter + 1) % 4) AltCalendarQuarter,
-			1 + (CalendarSemester + 0) % 2 AltCalendarSemester,
-			CalendarYear + CASE WHEN CalendarMonth >6 THEN 1 ELSE 0 END AltCalendarYear,
-			(100 * (CalendarYear + CASE WHEN CalendarMonth >6 THEN 1 ELSE 0 END)) + ((CalendarMonth - 6) % 12) AltCalendarYearMonth
+			1 + ((calendar_week_of_year + 25) % 52) alt_calendar_week_of_year,
+			1 + ((calendar_month+ 5) % 12) alt_calendar_month,
+			1 + ((calendar_quarter + 1) % 4) alt_calendar_quarter,
+			1 + (calendar_semester + 0) % 2 alt_calendar_semester,
+			calendar_year + CASE WHEN calendar_month > 6 THEN 1 ELSE 0 END alt_calendar_year,
+			(100 * (calendar_year + CASE WHEN calendar_month > 6 THEN 1 ELSE 0 END)) + ((calendar_month - 6) % 12) alt_calendar_year_month
 		FROM
 			cteCalendar
 	)
 
-    INSERT INTO @DateTable
+    INSERT INTO @date_table
 	SELECT * FROM cteFiscalCalendar OPTION (MAXRECURSION 0) 
     RETURN;
 END
-
 GO
-
-/****** Object:  Table [dbo].[DateTable]    Script Date: 8/10/2022 4:09:17 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[DateTable](
-	[DateKey] [int] NOT NULL,
-	[CalendarDate] [date] NOT NULL,
-	[CalendarDateName] [varchar](11) NOT NULL,
-	[CalendarDayOfWeek] [int] NOT NULL,
-	[CalendarDayOfIsoWeek] [int] NOT NULL,
-	[CalendarDayOfYear] [int] NOT NULL,
-	[CalendarWeekStart] [date] NOT NULL,
-	[CalendarWeekEnd] [date] NOT NULL,
-	[CalendarIsoWeekStart] [date] NOT NULL,
-	[CalendarIsoWeekEnd] [date] NOT NULL,
-	[CalendarDay] [int] NOT NULL,
-	[CalendarDayName] [varchar](3) NOT NULL,
-	[CalendarWeekOfMonth] [int] NOT NULL,
-	[CalendarWeekOfYear] [int] NOT NULL,
-	[CalendarIsoWeekOfYear] [int] NOT NULL,
-	[CalendarMonth] [int] NOT NULL,
-	[CalendarMonthName] [varchar](3) NOT NULL,
-	[CalendarQuarter] [int] NOT NULL,
-	[CalendarSemester] [int] NOT NULL,
-	[CalendarYear] [int] NOT NULL,
-	[CalendarYearMonth] [int] NOT NULL,
-	[CalendarYearMonthName] [varchar](6) NOT NULL,
-	[AltCalendarWeekOfYear] [int] NOT NULL,
-	[AltCalendarMonth] [int] NOT NULL,
-	[AltCalendarQuarter] [int] NOT NULL,
-	[AltCalenderSemester] [int] NOT NULL,
-	[AltCalendarYear] [int] NOT NULL,
-	[AltCalenderYearMonth] [int] NOT NULL,
- CONSTRAINT [PK_DateTable] PRIMARY KEY CLUSTERED 
-(
-	[DateKey] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Index [UQ_DateTable_CalendarDate]    Script Date: 8/10/2022 4:09:17 PM ******/
-CREATE UNIQUE NONCLUSTERED INDEX [UQ_DateTable_CalendarDate] ON [dbo].[DateTable]
-(
-	[CalendarDate] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-
-/****** Object:  Table [dbo].[DateTableView]    Script Date: 8/10/2022 4:09:17 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE VIEW [dbo].[DateTableView]
-AS
-	SELECT
-		*,
-
-		-- AGO FIELDS ARE DYNAMIC BASED ON GETDATE()
-		DATEDIFF(DD, CalendarDate, GETDATE()) CalendarDaysAgo,
-		DATEDIFF(WW, CalendarDate, GETDATE()) CalendarWeeksAgo,
-		DATEDIFF(MM, CalendarDate, GETDATE()) CalendarMonthsAgo,
-		DATEDIFF(QQ, CalendarDate, GETDATE()) CalendarQuartersAgo,
-		DATEDIFF(YY, CalendarDate, GETDATE()) CalendarYearsAgo
-	FROM
-		DateTable
-GO
-
-		
-		-- The base interest rate in effect
-		CREATE TABLE InterestRate (
-			RateId INT NOT NULL,
-			Rate FLOAT NOT NULL,
-			YearStart INT NOT NULL,
-			MonthStart INT NOT NULL
-		);
-GO
-
-INSERT INTO InterestRate 
-SELECT 1, 2.5, 0, 0
-UNION ALL
-SELECT 2, 2.25, 0, 3
-UNION ALL
-SELECT 3, 1.75, 0, 5
-UNION ALL
-SELECT 4, 1.50, 1, 2
-UNION ALL
-SELECT 5, 1.25, 1, 4
-UNION ALL
-SELECT 6, 1.00, 1, 7
-UNION ALL
-SELECT 7, 0.75, 4, 2
-UNION ALL
-SELECT 8, 0.50, 4, 5
-UNION ALL
-SELECT 9, 0.25, 6, 9
-UNION ALL
-SELECT 10, 0.50, 7, 10
-UNION ALL
-SELECT 11, 1.00, 7, 11
-UNION ALL
-SELECT 11, 1.50, 8, 2
-UNION ALL
-SELECT 11, 2.00, 8, 3
-UNION ALL
-SELECT 11, 2.25, 8, 4
-UNION ALL
-SELECT 11, 2.50, 8, 5
-UNION ALL
-SELECT 11, 2.75, 8, 6
-UNION ALL
-SELECT 11, 3.00, 8, 8
-UNION ALL
-SELECT 11, 3.25, 8, 10
-UNION ALL
-SELECT 11, 3.50, 9, 0
-UNION ALL
-SELECT 11, 3.75, 9, 2
-UNION ALL
-SELECT 11, 4.00, 9, 5
-UNION ALL
-SELECT 11, 4.25, 9, 9
-
-GO
-
-		CREATE TABLE Address (
-			AddressId INT NOT NULL,
-			AddressLine1 VARCHAR(250),
-			AddressLine2 VARCHAR(250),
-			Town VARCHAR(50),
-			Region VARCHAR(50),
-			Postcode INT,
-			Country VARCHAR(50)
-		)
-
-		-- Branch
-		CREATE TABLE Branch (
-			BranchId SMALLINT NOT NULL,
-			BranchName VARCHAR(50) NOT NULL,
-			BranchAddressId INT NOT NULL,
-			BranchOpenDateId INT NOT NULL
-		)
-
-		/****** Object:  Sequence [dbo].[SeqBranch]    Script Date: 16/10/2024 7:57:06 PM ******/
-		CREATE SEQUENCE [dbo].[SeqBranch] 
-		 AS [int]
-		 START WITH 1
-		 INCREMENT BY 1
-		 MINVALUE 1
-		 MAXVALUE 2147483647
-		 CACHE 
-
-GO
-
-----------------------------------------------------------------------------------------
--- Views
-----------------------------------------------------------------------------------------
-
-------------------------------------------
--- RegionView
---
--- Information about each region
-------------------------------------------
-;WITH cteRegions
-AS
-(
-	SELECT
-		Region,
-		COUNT(1) Weighting
-	FROM
-		staging.Address
-	GROUP BY
-		Region
-)
-, cteRegionBranches
-AS
-(
-	SELECT
-		a.Region,
-		COUNT(b.BranchId) Branches
-	FROM
-		Branch b
-	INNER JOIN
-		Address a
-	ON
-		b.BranchAddressId = a.AddressId
-	GROUP BY
-		a.Region
-)
-, cteMaxWeighting
-AS
-(
-	SELECT MAX(Weighting) MaxWeighting FROM cteRegions
-)
-
-SELECT
-	r.Region,
-	CAST(Weighting AS FLOAT) / mw.MaxWeighting Weighting	-- convert to number in range (0..1),
-FROM
-	cteRegions r
-CROSS JOIN
-	cteMaxWeighting mw
-LEFT OUTER JOIN
-	cteRegionBranches rb
-ON
-	r.Region = rb.Region
-
-GO
-
-----------------------------------------------------------------------------------------
--- ROUTINES
 
 -- =============================================
--- Author:		D.Barone
--- Create date: 20241019
--- Description:	Gets / formats person data from
---				json string.
+-- Object:		staging.fn_person
+-- Type:		FUNCTION
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	Transforms person data from json.
 -- =============================================
-
-CREATE FUNCTION staging.fnPerson
+CREATE FUNCTION staging.fn_person
 (
 	@json NVARCHAR(MAX),
-	@ReferenceDate DATE,
-	@Today DATE
+	@reference_date DATE,
+	@today DATE
 )
 RETURNS TABLE 
 AS
@@ -507,30 +352,174 @@ RETURN
 (
 	SELECT
 		*,
-		DATEDIFF(DAY, DoB, @ReferenceDate) DaysAlive,
-		DATEADD(DAY, -DATEDIFF(DAY, DoB, @ReferenceDate), @Today) DoBEx,
-		CAST(NULL AS FLOAT) MarryingType,
-		CAST(NULL AS INT) SpousePersonId
+		DATEDIFF(DAY, date_of_birth, @reference_date) days_alive,
+		DATEADD(DAY, -DATEDIFF(DAY, date_of_birth, @reference_date), @today) date_of_birth_ex,
+		CAST(NULL AS FLOAT) marrying_propensity,
+		CAST(NULL AS INT) spouse_person_id
 	FROM OPENJSON(@json)
 	WITH 
 	(
-		[PersonId] INT, 
-		[FirstName] varchar(50), 
-		[Surname] varchar(50), 
-		[Sex] varchar(1), 
-		[DoB] date
+		person_id INT, 
+		first_name VARCHAR(50), 
+		surname VARCHAR(50), 
+		sex VARCHAR(1), 
+		date_of_birth DATE
 	)
 )
 GO
 
 -- =============================================
--- Author:		D.Barone
--- Create date: 20241019
--- Description:	Marry off people
+-- Object:		staging.fn_address
+-- Type:		FUNCTION
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	Transforms address data from json.
 -- =============================================
-CREATE PROCEDURE staging.spPersonMarry
-	@marryingTypeRate FLOAT,
-	@marryWithinYearRange INT
+CREATE FUNCTION staging.fn_address
+(
+	@json NVARCHAR(MAX)
+)
+RETURNS
+	@results TABLE 
+(
+	address_id INT,
+	address_line_1 VARCHAR(250), 
+	address_line_2 VARCHAR(250), 
+	town VARCHAR(250), 
+	region VARCHAR(250), 
+	postcode INT,
+	postcode_region INT,
+	country VARCHAR(50)
+)
+AS
+BEGIN
+
+	DECLARE @address TABLE (
+		address_line_1 VARCHAR(250), 
+		address_line_2 VARCHAR(250), 
+		town VARCHAR(250), 
+		region VARCHAR(250), 
+		postcode INT,
+		country VARCHAR(50)
+	)
+
+	INSERT INTO
+		@Address (address_line_1, address_line_2, town, region, postcode, country)
+	SELECT
+		*
+	FROM OPENJSON(@json)
+	WITH 
+	(
+		address_line_1 VARCHAR(250), 
+		address_line_2 VARCHAR(250), 
+		town VARCHAR(250), 
+		region VARCHAR(250), 
+		postcode INT,
+		country VARCHAR(50)
+	)
+
+	-- Turn blanks into NULLs
+	UPDATE @Address SET address_line_2 = NULLIF(address_line_2, '')
+
+	-- Dbarone.Net.Fake generates a lot of distinct regions. We'll group by 1st 2 digits of
+	-- postcode, and use the 1st region for each group as a region. This will give us just
+	-- under 100 regions.
+	; WITH cteAddresses
+	AS
+	(
+		SELECT
+			ROW_NUMBER() OVER (ORDER BY postcode) AS address_id,
+			*,
+			CAST(postcode/1000 AS INT) postcode_region
+		FROM
+			@Address
+	)
+	, cteFirstAddressIdPerRegion
+	AS
+	(
+		SELECT
+			postcode_region,
+			MIN(address_id) default_region_address_id
+		FROM
+			cteAddresses
+		GROUP BY
+			postcode_region
+	)
+
+	INSERT INTO @results
+	SELECT
+		a.address_id,
+		a.address_line_1,
+		a.address_line_2,
+		a.town,
+		a2.region,
+		a.postcode,
+		a.postcode_region,
+		a.country
+	FROM
+		cteAddresses a
+	INNER JOIN
+		cteFirstAddressIdPerRegion ar
+	ON
+		a.postcode_region = ar.postcode_region
+	INNER JOIN
+		cteAddresses a2
+	ON
+		ar.default_region_address_id = a2.address_id
+
+	RETURN 
+END
+GO
+
+-- =============================================
+-- Object:		staging.fn_interest_rate
+-- Type:		FUNCTION
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	Transforms interest rate data from json.
+-- =============================================
+CREATE FUNCTION staging.fn_interest_rate
+(
+	@json VARCHAR(MAX),
+	@today DATE
+)
+RETURNS TABLE 
+AS
+RETURN 
+(
+	WITH cteInterestRate
+	AS
+	(
+		SELECT
+			interest_rate_id,
+			interest_rate,
+			DATEADD(MONTH, ir.month_start, DATEADD(YEAR, ir.year_start, @today)) effective_date
+		FROM
+			staging.interest_rate ir
+	)
+
+	SELECT
+		*,
+		(SELECT DATEADD(DD, -1, MIN(effective_date)) FROM cteInterestRate ir2 WHERE ir2.effective_date > ir.effective_date) [expiry_date]
+	FROM
+		cteInterestRate ir
+)
+GO
+
+---------------------------------------------
+-- Procedures
+---------------------------------------------
+
+-- =============================================
+-- Object:		staging.sp_person_marry
+-- Type:		PROCEDURE
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	marries people.
+-- =============================================
+CREATE PROCEDURE staging.sp_person_marry
+	@marrying_type_rate FLOAT,
+	@marry_within_year_range INT
 AS
 BEGIN
 
@@ -541,54 +530,54 @@ BEGIN
 		-- Calculate marrying type for each person (0..1)
 		WHILE (1=1)
 		BEGIN
-			DECLARE @NextPersonId INT
-			SELECT @NextPersonId = MIN(PersonId) FROM staging.Person WHERE MarryingType IS NULL
-			IF @NextPersonId IS NULL
+			DECLARE @next_person_id INT
+			SELECT @next_person_id = MIN(person_id) FROM staging.person WHERE marrying_type IS NULL
+			IF @next_person_id IS NULL
 			BEGIN
 				BREAK
 			END
 
-			SET @Random = RAND()
+			SET @random = RAND()
 
-			UPDATE staging.Person
-			SET MarryingType = @Random
-			WHERE PersonId = @NextPersonId
+			UPDATE staging.person
+			SET marrying_type = @Random
+			WHERE person_id = @next_person_id
 		END
 
 		-- Marry people based on following rules:
-		-- - Person must be marrying type (i.e. above the @marryingTypeRate)
-		-- - Must find another person with same surname, within 10 years of age
+		-- - Person must be marrying type (i.e. above the @marrying_type_rate)
+		-- - Must find another person with same surname, within @marry_within_year_range of age
 		-- - Must be > 18 years old
 		-- - one M, one F
 		WHILE (1=1)
 		BEGIN
-			DECLARE @SpouseMalePersonId INT = NULL
-			DECLARE @SpouseFemalePersonId INT = NULL
+			DECLARE @spouse_male_person_id INT = NULL
+			DECLARE @spouse_female_person_id INT = NULL
 
 			SELECT
-				@SpouseMalePersonId = A.SpouseMalePersonId,
-				@SpouseFemalePersonId = A.SpouseFemalePersonId
+				@spouse_male_person_id = a.spouse_male_person_id,
+				@spouse_female_person_id = a.spouse_female_person_id
 			FROM
 			(
 				SELECT TOP 1
-					males.PersonId SpouseMalePersonId,
-					females.PersonId SpouseFemalePersonId
+					males.person_id spouse_male_person_id,
+					females.person_id spouse_female_person_id
 				FROM
-					(SELECT * FROM staging.Person WHERE Sex = 'M' AND MarryingType > @MarryingTypeRate AND SpousePersonId IS NULL) males
+					(SELECT * FROM staging.person WHERE Sex = 'M' AND marrying_type > @marrying_type_rate AND spouse_person_id IS NULL) males
 				INNER JOIN
-					(SELECT * FROM staging.Person WHERE Sex = 'F' AND MarryingType > @MarryingTypeRate AND SpousePersonId IS NULL) females
+					(SELECT * FROM staging.person WHERE Sex = 'F' AND marrying_type > @marrying_type_rate AND spouse_person_id IS NULL) females
 				ON
-					males.Surname = females.Surname
-					AND DATEDIFF(YEAR, males.DoBEx, females.DoBEx) BETWEEN -@MarryWithinYearRange AND @MarryWithinYearRange
+					males.surname = females.surname
+					AND DATEDIFF(YEAR, males.date_of_birth_ex, females.date_of_birth_ex) BETWEEN -@marry_within_year_range AND @marry_within_year_range
 			) A
 
-			IF @SpouseMalePersonId IS NULL OR @SpouseFemalePersonId IS NULL
+			IF @spouse_male_person_id IS NULL OR @spouse_female_person_id IS NULL
 			BEGIN
 				BREAK
 			END
 
-			UPDATE staging.Person SET SpousePersonId = @SpouseFemalePersonId WHERE PersonId = @SpouseMalePersonId 
-			UPDATE staging.Person SET SpousePersonId = @SpouseMalePersonId WHERE PersonId = @SpouseFemalePersonId 
+			UPDATE staging.person SET spouse_person_id = @spouse_female_person_id WHERE person_id = @spouse_male_person_id 
+			UPDATE staging.person SET spouse_person_id = @spouse_male_person_id WHERE person_id = @spouse_female_person_id
 		END
 
 		PRINT ('End marriage process...')
@@ -596,135 +585,82 @@ BEGIN
 END
 GO
 
+---------------------------------------------
+-- Views
+---------------------------------------------
+
 -- =============================================
--- Author:		D.Barone
--- Create date: 20241019
--- Description:	Extract + transform addresses
+-- Object:		vw_date_table
+-- Type:		VIEW
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	Dynamically generated date table.
 -- =============================================
-CREATE FUNCTION staging.fnAddress
-(
-	@json NVARCHAR(MAX)
-)
-RETURNS
-	@results TABLE 
-(
-	[AddressId] INT,
-	[AddressLine1] VARCHAR(250), 
-	[AddressLine2] VARCHAR(250), 
-	[Town] VARCHAR(250), 
-	[Region] VARCHAR(250), 
-	[Postcode] INT,
-	[PostcodeRegion] INT,
-	[Country] VARCHAR(50)
-)
+CREATE VIEW vw_date_table
 AS
-BEGIN
+	SELECT
+		*,
 
-		DECLARE @Address TABLE (
-			[AddressLine1] VARCHAR(250), 
-			[AddressLine2] VARCHAR(250), 
-			[Town] VARCHAR(250), 
-			[Region] VARCHAR(250), 
-			[Postcode] INT,
-			[Country] VARCHAR(50)
-		)
-
-		INSERT INTO
-			@Address (AddressLine1, AddressLine2, Town, Region, Postcode, Country)
-		SELECT
-			*
-		FROM OPENJSON(@json)
-		WITH 
-		(
-			[AddressLine1] VARCHAR(250), 
-			[AddressLine2] VARCHAR(250), 
-			[Town] VARCHAR(250), 
-			[Region] VARCHAR(250), 
-			[Postcode] INT,
-			[Country] VARCHAR(50)
-		)
-
-		-- Turn blanks into NULLs
-		UPDATE @Address SET AddressLine2 = NULLIF(AddressLine2, '')
-
-		-- Dbarone.Net.Fake generates a lot of distinct regions. We'll group by 1st 2 digits of
-		-- postcode, and use the 1st region for each group as a region. This will give us just
-		-- under 100 regions.
-		; WITH cteAddresses
-		AS
-		(
-			SELECT
-				ROW_NUMBER() OVER (ORDER BY Postcode) AS AddressId,
-				*,
-				CAST(Postcode/1000 AS INT) PostcodeRegion
-			FROM
-				@Address
-		)
-		, cteFirstAddressIdPerRegion
-		AS
-		(
-			SELECT
-				PostcodeRegion,
-				MIN(AddressId) DefaultRegionAddressId
-			FROM
-				cteAddresses
-			GROUP BY
-				PostcodeRegion
-		)
-
-		INSERT INTO @results
-		SELECT
-			a.AddressId,
-			a.AddressLine1,
-			a.AddressLine2,
-			a.Town,
-			a2.Region,
-			a.Postcode,
-			a.PostcodeRegion,
-			a.Country
-		FROM
-			cteAddresses a
-		INNER JOIN
-			cteFirstAddressIdPerRegion ar
-		ON
-			a.PostcodeRegion = ar.PostcodeRegion
-		INNER JOIN
-			cteAddresses a2
-		ON
-			ar.DefaultRegionAddressId = a2.AddressId
-
-	RETURN 
-END
+		-- AGO FIELDS ARE DYNAMIC BASED ON GETDATE()
+		DATEDIFF(DD, calendar_date, GETDATE()) calendar_days_ago,
+		DATEDIFF(WW, calendar_date, GETDATE()) calendar_weeks_ago,
+		DATEDIFF(MM, calendar_date, GETDATE()) calendar_months_ago,
+		DATEDIFF(QQ, calendar_date, GETDATE()) calendar_quarters_ago,
+		DATEDIFF(YY, calendar_date, GETDATE()) calendar_years_ago
+	FROM
+		date_table
 GO
 
 -- =============================================
--- Author:		D.Barone
--- Create date: 20241019
--- Description:	Calculates the interest rate table.
+-- Object:		vw_region
+-- Type:		VIEW
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	view of regions.
 -- =============================================
-CREATE FUNCTION staging.fnInterestRate 
-(
-	@Today DATE
-)
-RETURNS TABLE 
+CREATE VIEW staging.vw_region
 AS
-RETURN 
-(
-	WITH cteInterestRate
+	WITH cteRegions
 	AS
 	(
 		SELECT
-			InterestRateId,
-			InterestRate,
-			DATEADD(MONTH, ir.MonthStart, DATEADD(YEAR, ir.YearStart, @Today)) EffectiveDate
+			region,
+			COUNT(1) weighting
 		FROM
-			staging.InterestRate ir
+			staging.address
+		GROUP BY
+			region
+	)
+	, cteRegionBranches
+	AS
+	(
+		SELECT
+			a.region,
+			COUNT(b.branch_id) branch_count
+		FROM
+			branch b
+		INNER JOIN
+			[address] a
+		ON
+			b.branch_address_id = a.address_id
+		GROUP BY
+			a.region
+	)
+	, cteMaxWeighting
+	AS
+	(
+		SELECT MAX(weighting) max_weighting FROM cteRegions
 	)
 
 	SELECT
-		*,
-		(SELECT MIN(EffectiveDate) - 1 FROM cteInterestRate ir2 WHERE ir2.EffectiveDate > ir.EffectiveDate) ExpiryDate
+		r.region,
+		CAST(weighting AS FLOAT) / mw.max_weighting weighting	-- convert to number in range (0..1),
 	FROM
-		cteInterestRate ir
-)
+		cteRegions r
+	CROSS JOIN
+		cteMaxWeighting mw
+	LEFT OUTER JOIN
+		cteRegionBranches rb
+	ON
+		r.region = rb.region
 GO
