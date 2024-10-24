@@ -1,5 +1,6 @@
 [
   {
+    "README": "Fictional set of base interest rates very loosely based on Australian interest rates from 2015-2025. This table can be set on loop to mimck greater periods of time.",
     "interest_rate_id": 1,
     "interest_rate": 2.5,
     "year_start": 0,

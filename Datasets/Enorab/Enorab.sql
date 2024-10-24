@@ -155,6 +155,37 @@ BEGIN
 		-- 4.1 Create new branches
 		EXEC sp_branch_open @date, @new_branch_open_rate, @random1, @random2 
 
+		-- 4.2 New people being born in the population
+
+		-- 4.3 People dying in the population
+
+		-- 4.4 New customer opening new account (invester or borrower)
+
+		-- 4.4 Existing customers opening a new account
+
+		-- 4.5 Transactions on transactional accounts
+
+		-- 4.6 Interest charged on loans
+
+		-- 4.7 Interest charged on overdrawn accounts
+
+		-- 4.8 Calculation of fees (e.g. unauthorised overdraft)
+
+		-- 4.9 Calculation of bank interest
+
+		-- 4.10 Calculation of term deposit interest
+
+		-- 4.11 Rollover of term deposit
+
+		-- 4.12 Rollover of loan product (fixed rate -> variable rate)
+		
+		-- 4.13 Existing customers closing an existing account
+
+		-- 4.146 Existing customers leaving bank (closing all accounts)
+
+		-- 4.xx End of Month
+		-- Update parameters (e.g. invest/borrower bias)
+		
 		-- next date
 		SET @date = DATEADD(d, 1, @Date)
 	END
