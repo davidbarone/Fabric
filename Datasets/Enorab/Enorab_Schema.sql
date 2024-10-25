@@ -87,9 +87,8 @@ CREATE TABLE staging.person (
 	surname varchar(50), 
 	sex varchar(1), 
 	date_of_birth date,
+	date_of_birth_adjusted DATE,
 	date_of_death date,
-	days_alive INT,
-	date_of_birth_ex DATE,
 	marrying_type FLOAT,
 	spouse_person_id INT
 )
@@ -364,9 +363,8 @@ RETURN
 (
 	SELECT
 		*,
+		DATEADD(DAY, -DATEDIFF(DAY, date_of_birth, @reference_date), @today) date_of_birth_adjusted,
 		CAST(NULL AS DATE) date_of_death,
-		DATEDIFF(DAY, date_of_birth, @reference_date) days_alive,
-		DATEADD(DAY, -DATEDIFF(DAY, date_of_birth, @reference_date), @today) date_of_birth_ex,
 		CAST(NULL AS FLOAT) marrying_propensity,
 		CAST(NULL AS INT) spouse_person_id
 	FROM OPENJSON(@json)
@@ -590,15 +588,8 @@ RETURNS
 AS
 BEGIN 
 
-	-- Get initial copy of interest rates from json
-	DECLARE @life_table TABLE (
-		age INT,
-		male_rate FLOAT,
-		female_rate FLOAT
-	)
-
 	INSERT INTO
-		@life_table (age, male_rate, female_rate)
+		@results (age, male_rate, female_rate)
 	SELECT
 		*
 	FROM OPENJSON(@json)
@@ -629,17 +620,21 @@ CREATE PROCEDURE staging.sp_person_die
 	@date DATE
 AS
 BEGIN
+		SET NOCOUNT ON
 
 		DECLARE @date_id INT
 		SELECT @date_id = date_id FROM staging.date_table WHERE calendar_date = @date
 
 		PRINT ('Begin death process...')
-		DECLARE @Random FLOAT = RAND(@date_id)
+		DECLARE @random FLOAT = RAND(@date_id)
 
 		-- Calculate whether person dies today
+		DECLARE @current_person_id INT
+
 		WHILE (1=1)
 		BEGIN
-			DECLARE @next_person_id INT
+			DECLARE @next_person_id INT = NULL
+
 			DECLARE @next_rate FLOAT
 			SELECT TOP(1)
 				@next_person_id = person_id,
@@ -648,24 +643,29 @@ BEGIN
 				staging.person p
 			INNER JOIN
 				staging.life_table lt
-			ON DATEDIFF(YEAR, p.date_of_birth, @date) = lt.age
+			ON DATEDIFF(YEAR, p.date_of_birth_adjusted, @date) = lt.age
 			WHERE
-				date_of_death IS NULL
+				date_of_death IS NULL AND
+				person_id > COALESCE(@current_person_id, 0)
+				
 			ORDER BY
 				person_id			
 			
+			PRINT(@next_person_id)
+
 			IF @next_person_id IS NULL
 			BEGIN
 				BREAK
 			END
-
+	
 			SET @random = RAND()
 
 			UPDATE staging.person
-			SET marrying_type = @Random
+			SET date_of_death = @date
 			WHERE
 				person_id = @next_person_id AND
 				@random < @next_rate
+			SET @current_person_id = @next_person_id
 		END
 		PRINT ('End death process...')
 END
@@ -683,6 +683,7 @@ CREATE PROCEDURE staging.sp_person_marry
 	@marry_within_year_range INT
 AS
 BEGIN
+		SET NOCOUNT ON
 
 		PRINT ('Begin marriage process...')
 
@@ -729,7 +730,7 @@ BEGIN
 					(SELECT * FROM staging.person WHERE Sex = 'F' AND marrying_type > @marrying_type_rate AND spouse_person_id IS NULL) females
 				ON
 					males.surname = females.surname
-					AND DATEDIFF(YEAR, males.date_of_birth_ex, females.date_of_birth_ex) BETWEEN -@marry_within_year_range AND @marry_within_year_range
+					AND DATEDIFF(YEAR, males.date_of_birth_adjusted, females.date_of_birth_adjusted) BETWEEN -@marry_within_year_range AND @marry_within_year_range
 			) A
 
 			IF @spouse_male_person_id IS NULL OR @spouse_female_person_id IS NULL
