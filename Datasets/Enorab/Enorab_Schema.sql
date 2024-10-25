@@ -25,6 +25,7 @@ GO
 DROP FUNCTION IF EXISTS staging.fn_person
 DROP FUNCTION IF EXISTS staging.fn_address
 DROP FUNCTION IF EXISTS staging.fn_interest_rate
+DROP FUNCTION IF EXISTS staging.fn_life_table
 DROP FUNCTION IF EXISTS staging.fn_date_to_int
 DROP FUNCTION IF EXISTS staging.fn_dates
 DROP PROCEDURE IF EXISTS staging.sp_person_marry
@@ -36,6 +37,7 @@ DROP VIEW IF EXISTS vw_date_table
 
 DROP TABLE IF EXISTS staging.date_table
 DROP TABLE IF EXISTS staging.interest_rate
+DROP TABLE IF EXISTS staging.life_table
 DROP TABLE IF EXISTS staging.person
 DROP TABLE IF EXISTS staging.address
 DROP TABLE IF EXISTS interest_rate
@@ -44,6 +46,7 @@ DROP TABLE IF EXISTS [address]
 DROP TABLE IF EXISTS branch
 DROP TABLE IF EXISTS interest_rate
 
+DROP PROCEDURE IF EXISTS staging.sp_person_die
 DROP PROCEDURE IF EXISTS sp_branch_open
 
 -- Drop schema
@@ -66,6 +69,12 @@ CREATE TABLE staging.interest_rate (
 )
 GO
 
+CREATE TABLE staging.life_table (
+	age INT NOT NULL,
+	male_rate FLOAT NOT NULL,
+	female_rate FLOAT NOT NULL
+)
+
 CREATE TABLE dbo.interest_rate (
 	calendar_date DATE NOT NULL,
 	interest_rate FLOAT NOT NULL
@@ -73,11 +82,12 @@ CREATE TABLE dbo.interest_rate (
 GO
 
 CREATE TABLE staging.person (
-	person_id INT, 
+	person_id INT PRIMARY KEY, 
 	first_name varchar(50), 
 	surname varchar(50), 
 	sex varchar(1), 
 	date_of_birth date,
+	date_of_death date,
 	days_alive INT,
 	date_of_birth_ex DATE,
 	marrying_type FLOAT,
@@ -86,7 +96,7 @@ CREATE TABLE staging.person (
 GO
 
 CREATE TABLE staging.address (
-	address_id INT,
+	address_id INT PRIMARY KEY,
 	address_line_1 VARCHAR(250), 
 	address_line_2 VARCHAR(250), 
 	town VARCHAR(250), 
@@ -354,6 +364,7 @@ RETURN
 (
 	SELECT
 		*,
+		CAST(NULL AS DATE) date_of_death,
 		DATEDIFF(DAY, date_of_birth, @reference_date) days_alive,
 		DATEADD(DAY, -DATEDIFF(DAY, date_of_birth, @reference_date), @today) date_of_birth_ex,
 		CAST(NULL AS FLOAT) marrying_propensity,
@@ -558,9 +569,107 @@ END
 
 GO
 
+-- =============================================
+-- Object:		staging.fn_life_table
+-- Type:		FUNCTION
+-- Author:		David Barone
+-- Create date: 20241015
+-- Description:	Transforms life table from json.
+-- =============================================
+CREATE FUNCTION staging.fn_life_table
+(
+	@json VARCHAR(MAX)
+)
+RETURNS
+	@results TABLE 
+(
+	age INT,
+	male_rate FLOAT,
+	female_rate FLOAT
+)
+AS
+BEGIN 
+
+	-- Get initial copy of interest rates from json
+	DECLARE @life_table TABLE (
+		age INT,
+		male_rate FLOAT,
+		female_rate FLOAT
+	)
+
+	INSERT INTO
+		@life_table (age, male_rate, female_rate)
+	SELECT
+		*
+	FROM OPENJSON(@json)
+	WITH 
+	(
+		age INT,
+		male_rate FLOAT,
+		female_rate FLOAT
+	)
+
+	RETURN
+END
+
+GO
+
 ---------------------------------------------
 -- Procedures
 ---------------------------------------------
+
+-- =============================================
+-- Object:		staging.sp_person_die
+-- Type:		PROCEDURE
+-- Author:		David Barone
+-- Create date: 20241026
+-- Description:	decease people using life table.
+-- =============================================
+CREATE PROCEDURE staging.sp_person_die
+	@date DATE
+AS
+BEGIN
+
+		DECLARE @date_id INT
+		SELECT @date_id = date_id FROM staging.date_table WHERE calendar_date = @date
+
+		PRINT ('Begin death process...')
+		DECLARE @Random FLOAT = RAND(@date_id)
+
+		-- Calculate whether person dies today
+		WHILE (1=1)
+		BEGIN
+			DECLARE @next_person_id INT
+			DECLARE @next_rate FLOAT
+			SELECT TOP(1)
+				@next_person_id = person_id,
+				@next_rate = CASE p.sex WHEN 'M' THEN lt.male_rate ELSE lt.female_rate END
+			FROM
+				staging.person p
+			INNER JOIN
+				staging.life_table lt
+			ON DATEDIFF(YEAR, p.date_of_birth, @date) = lt.age
+			WHERE
+				date_of_death IS NULL
+			ORDER BY
+				person_id			
+			
+			IF @next_person_id IS NULL
+			BEGIN
+				BREAK
+			END
+
+			SET @random = RAND()
+
+			UPDATE staging.person
+			SET marrying_type = @Random
+			WHERE
+				person_id = @next_person_id AND
+				@random < @next_rate
+		END
+		PRINT ('End death process...')
+END
+GO
 
 -- =============================================
 -- Object:		staging.sp_person_marry

@@ -14,6 +14,7 @@ Version	Date		Author			Details
 1.0		13/10/2024	David Barone	Script created
 *********************************************************************/
 USE enorab
+GO
 
 BEGIN TRANSACTION
 
@@ -137,6 +138,16 @@ BEGIN
 		INSERT INTO staging.interest_rate SELECT * FROM staging.fn_interest_rate(@interest_rate_json, @start_date, @today)
 	END
 
+	-- 3.4 Life table
+	BEGIN
+		PRINT('Generating life table...')
+		DECLARE @life_table_json VARCHAR(MAX)
+		SELECT @life_table_json = BulkColumn
+		FROM OPENROWSET (BULK 'E:\david\github\Power-BI\Datasets\Enorab\json\life_table.json', SINGLE_CLOB) import
+
+		INSERT INTO staging.life_table SELECT * FROM staging.fn_life_table(@life_table_json)
+	END
+
 	-------------------------------------
 	-- 4. Main daily data generation
 	-------------------------------------
@@ -158,6 +169,7 @@ BEGIN
 		-- 4.2 New people being born in the population
 
 		-- 4.3 People dying in the population
+		EXEC staging.sp_person_die @date
 
 		-- 4.4 New customer opening new account (invester or borrower)
 
