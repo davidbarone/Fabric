@@ -610,7 +610,7 @@ GO
 ---------------------------------------------
 
 -- =============================================
--- Object:		staging.sp_person_die
+-- Object:		staging.sp_person_generate_population
 -- Type:		PROCEDURE
 -- Author:		David Barone
 -- Create date: 20241026
@@ -628,7 +628,7 @@ GO
 -- i) repeat daily process until end date
 -- j) if population > n, then randomly remove people
 -- =============================================
-ALTER PROCEDURE staging.sp_population_generate
+ALTER PROCEDURE staging.sp_person_generate_population
 	@start_date DATE,
 	@end_date DATE,
 	@required_population INT
@@ -656,12 +656,15 @@ BEGIN
 		SET @i = @i + 1
 	END
 
-	SELECT * FROM @people
+	--SELECT * FROM @people
 
 	DECLARE @current_date DATE = @epoch
 	WHILE @current_date < @end_date
 	BEGIN
+		DECLARE @msg VARCHAR(250)
+		PRINT ('Iterating population for date: ' + CAST(@current_date AS VARCHAR))
 
+		-- deaths
 		; WITH cte
 		AS
 		(
@@ -694,14 +697,45 @@ BEGIN
 		WHERE
 			random_survive <= survival_rate
 
+		-- births
+		; WITH cte
+		AS
+		(
+			SELECT
+				p.person_id,
+				12.5 / 1000 / 365.25 birth_rate,	-- birth rate - set 12.5 per 1000 people per year
+				(0.0 + ABS(CHECKSUM(NewId())) %  CAST(POWER(2.0, 31) -1 AS INT)) / CAST(POWER(2.0, 31) -1 AS INT) random
+			FROM
+				@people p
+			WHERE
+				date_of_death IS NULL
+		)
+
+		INSERT INTO
+			@people (sex, date_of_birth)
+		SELECT
+			CASE
+				WHEN (
+					ABS(
+						CHECKSUM(NewId())
+						) % CAST(POWER(2.0, 31) -1 AS INT)
+					) / CAST(POWER(2.0, 31) -1 AS INT) <= (104.0/100)
+				THEN 'M'
+				ELSE 'F'
+			END,
+			@current_date
+
 		SET @current_date = DATEADD(DD, 1, @current_date)
 	END
-	SELECT *, DATEDIFF(YEAR, date_of_birth, date_of_death) FROM @people ORDER BY DATEDIFF(YEAR, date_of_birth, date_of_death)
+	SELECT *, DATEDIFF(YEAR, date_of_birth, date_of_death) FROM @people WHERE 
+		(date_of_death IS NULL OR
+		date_of_death >= @start_date) AND
+		date_of_birth < @end_date
+	ORDER BY DATEDIFF(YEAR, date_of_birth, date_of_death)
 END
 GO
 
-EXEC staging.sp_population_generate '20000101', 1000
-
+EXEC staging.sp_person_generate_population '20000101', '20241027', 1000
 
 -- =============================================
 -- Object:		staging.sp_person_die
