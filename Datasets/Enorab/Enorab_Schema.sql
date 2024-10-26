@@ -656,28 +656,29 @@ BEGIN
 		SET @i = @i + 1
 	END
 
-	--SELECT * FROM @people
+	SELECT * FROM @people
 
 	DECLARE @current_date DATE = @epoch
 	WHILE @current_date < @end_date
 	BEGIN
-		--PRINT(CAST(@current_date AS VARCHAR))
 
 		; WITH cte
 		AS
 		(
 			SELECT
 				p.person_id,
+				date_of_birth,
+				DATEDIFF(YEAR, p.date_of_birth, @current_date) age,
 				(CASE WHEN p.sex = 'M' THEN lt.male_rate ELSE female_rate END) / 365.25 survival_rate,
 				(0.0 + ABS(CHECKSUM(NewId())) %  CAST(POWER(2.0, 31) -1 AS INT)) / CAST(POWER(2.0, 31) -1 AS INT) random_survive
 			FROM
 				@people p
-			INNER JOIN
+			LEFT OUTER JOIN
 				staging.life_table lt
 			ON
-				DATEDIFF(YEAR, p.date_of_birth, @current_date) = lt.age
+				CASE WHEN DATEDIFF(YEAR, p.date_of_birth, @current_date) > 99 THEN 99 ELSE DATEDIFF(YEAR, p.date_of_birth, @current_date) END  = lt.age
 			WHERE
-				date_of_death IS NOT NULL
+				date_of_death IS NULL
 		)
 
 		UPDATE
@@ -690,11 +691,12 @@ BEGIN
 			cte c
 		ON
 			p.person_id = c.person_id
-
+		WHERE
+			random_survive <= survival_rate
 
 		SET @current_date = DATEADD(DD, 1, @current_date)
 	END
-	SELECT * FROM @people
+	SELECT *, DATEDIFF(YEAR, date_of_birth, date_of_death) FROM @people ORDER BY DATEDIFF(YEAR, date_of_birth, date_of_death)
 END
 GO
 
