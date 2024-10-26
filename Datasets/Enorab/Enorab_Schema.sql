@@ -614,6 +614,98 @@ GO
 -- Type:		PROCEDURE
 -- Author:		David Barone
 -- Create date: 20241026
+-- Description:	Generates a population.
+-- Notes:		Algorithm works as follows:
+--
+-- a) Define a start/end date for population
+-- b) Define end population required (n)
+-- c) define epoch = start date - 100 years
+-- d) create population (n) at epoch date with age
+-- 	  following linear distribution of ages between 0 and 100
+-- e) play the following daily algorithm:
+-- f) new births at rate of 12.5 per 1000 per year. 104 boys to 100 girls
+-- g) deaths follow life_table rates
+-- i) repeat daily process until end date
+-- j) if population > n, then randomly remove people
+-- =============================================
+ALTER PROCEDURE staging.sp_population_generate
+	@start_date DATE,
+	@end_date DATE,
+	@required_population INT
+AS
+BEGIN
+
+	SET NOCOUNT ON
+
+	DECLARE @epoch DATE = DATEADD(YEAR, -100, @start_date)
+
+	DECLARE @people TABLE (
+		person_id INT IDENTITY(1,1),
+		sex CHAR(1),
+		date_of_birth DATE,
+		date_of_death DATE NULL
+	)
+
+	DECLARE @i INT = 0
+	WHILE @i < @required_population
+	BEGIN
+		DECLARE @random FLOAT = RAND()
+		DECLARE @days_alive INT
+		SET @days_alive = @random * 100 * 365.25
+		INSERT INTO @people (date_of_birth, sex) SELECT DATEADD(DAY, -@days_alive, @epoch), CASE WHEN @i % 2 = 0 THEN 'M' ELSE 'F' END
+		SET @i = @i + 1
+	END
+
+	--SELECT * FROM @people
+
+	DECLARE @current_date DATE = @epoch
+	WHILE @current_date < @end_date
+	BEGIN
+		--PRINT(CAST(@current_date AS VARCHAR))
+
+		; WITH cte
+		AS
+		(
+			SELECT
+				p.person_id,
+				(CASE WHEN p.sex = 'M' THEN lt.male_rate ELSE female_rate END) / 365.25 survival_rate,
+				(0.0 + ABS(CHECKSUM(NewId())) %  CAST(POWER(2.0, 31) -1 AS INT)) / CAST(POWER(2.0, 31) -1 AS INT) random_survive
+			FROM
+				@people p
+			INNER JOIN
+				staging.life_table lt
+			ON
+				DATEDIFF(YEAR, p.date_of_birth, @current_date) = lt.age
+			WHERE
+				date_of_death IS NOT NULL
+		)
+
+		UPDATE
+			@people
+		SET
+			date_of_death = @current_date
+		FROM
+			@people p
+		INNER JOIN
+			cte c
+		ON
+			p.person_id = c.person_id
+
+
+		SET @current_date = DATEADD(DD, 1, @current_date)
+	END
+	SELECT * FROM @people
+END
+GO
+
+EXEC staging.sp_population_generate '20000101', 1000
+
+
+-- =============================================
+-- Object:		staging.sp_person_die
+-- Type:		PROCEDURE
+-- Author:		David Barone
+-- Create date: 20241026
 -- Description:	decease people using life table.
 -- =============================================
 CREATE PROCEDURE staging.sp_person_die
@@ -626,7 +718,7 @@ BEGIN
 		SELECT @date_id = date_id FROM staging.date_table WHERE calendar_date = @date
 
 		PRINT ('Begin death process...')
-		DECLARE @random FLOAT = RAND(@date_id)
+		DECLARE @random FLOAT-- = RAND(@date_id)
 
 		-- Calculate whether person dies today
 		DECLARE @current_person_id INT
@@ -634,11 +726,12 @@ BEGIN
 		WHILE (1=1)
 		BEGIN
 			DECLARE @next_person_id INT = NULL
+			SELECT @random = RAND()
 
 			DECLARE @next_rate FLOAT
 			SELECT TOP(1)
 				@next_person_id = person_id,
-				@next_rate = CASE p.sex WHEN 'M' THEN lt.male_rate ELSE lt.female_rate END
+				@next_rate = (CASE p.sex WHEN 'M' THEN lt.male_rate ELSE lt.female_rate END / 365.25) -- convert to daily rate
 			FROM
 				staging.person p
 			INNER JOIN
@@ -651,20 +744,17 @@ BEGIN
 			ORDER BY
 				person_id			
 			
-			PRINT(@next_person_id)
-
 			IF @next_person_id IS NULL
 			BEGIN
 				BREAK
 			END
 	
-			SET @random = RAND()
-
 			UPDATE staging.person
 			SET date_of_death = @date
 			WHERE
 				person_id = @next_person_id AND
 				@random < @next_rate
+
 			SET @current_person_id = @next_person_id
 		END
 		PRINT ('End death process...')

@@ -37,7 +37,7 @@ BEGIN
 		DECLARE @marry_within_year_range INT = 5						-- only marry people within this many years age.
 		DECLARE @account_create_rate FLOAT = 0.001						-- This is the daily rate of an individual creating a new investment account
 		DECLARE @new_customer_rate FLOAT = 0.001						-- Rate at which a new customer opens first account at bank
-		DECLARE @days_history INT = 3 * 365.25							-- number of days history to generate
+		DECLARE @days_history INT = 10 * 365.25							-- number of days history to generate
 		DECLARE @start_date DATE = DATEADD(DAY, -@days_history, @today)	-- start date
 
 		-- validations
