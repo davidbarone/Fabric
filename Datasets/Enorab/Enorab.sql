@@ -40,6 +40,14 @@ BEGIN
 		DECLARE @days_history INT = 10 * 365.25							-- number of days history to generate
 		DECLARE @start_date DATE = DATEADD(DAY, -@days_history, @today)	-- start date
 
+		-- Models life table
+		DECLARE @life_table_m0 FLOAT = 0.00003
+		DECLARE @life_table_m1 FLOAT = 0.00003
+		DECLARE @life_table_m2 FLOAT = 0.00035
+		DECLARE @life_table_f0 FLOAT = 0.00003
+		DECLARE @life_table_f1 FLOAT = 0.00003
+		DECLARE @life_table_f2 FLOAT = 0.0003
+
 		-- validations
 		IF @days_history < 100 OR @days_history > 10000
 		BEGIN
