@@ -35,6 +35,7 @@ DROP SEQUENCE IF EXISTS seq_branch
 DROP VIEW IF EXISTS staging.vw_region
 DROP VIEW IF EXISTS vw_date_table
 
+DROP TABLE IF EXISTS staging.configuration
 DROP TABLE IF EXISTS staging.date_table
 DROP TABLE IF EXISTS staging.interest_rate
 DROP TABLE IF EXISTS staging.life_table
@@ -60,6 +61,13 @@ GO
 ---------------------------------------------
 -- Tables
 ---------------------------------------------
+
+CREATE TABLE [staging].[configuration](
+	[configuration_name] [varchar](50) NOT NULL PRIMARY KEY,
+	[configuration_value] [nchar](10) NOT NULL,
+	[configuration_description] [varchar](250) NOT NULL
+) ON [PRIMARY]
+GO
 
 CREATE TABLE staging.interest_rate (
 	interest_rate_id INT NOT NULL,
