@@ -609,14 +609,6 @@ GO
 -- Procedures
 ---------------------------------------------
 
-USE [Enorab]
-GO
-/****** Object:  StoredProcedure [staging].[sp_person_generate_population]    Script Date: 16/11/2024 4:06:09 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
 -- =============================================
 -- Object:		staging.sp_person_generate_population
 -- Type:		PROCEDURE
@@ -641,16 +633,22 @@ ALTER PROCEDURE [staging].[sp_person_generate_population]
 	@end_date DATE,
 	@required_population INT,
 
-	@birth_date_per_1000_per_year FLOAT,
+	@birth_rate_per_1000_per_year FLOAT,
 	@boy_birth_ratio FLOAT,
 
 	@life_table_m0 FLOAT,
 	@life_table_m1 FLOAT,
 	@life_table_m2 FLOAT,
+	@life_table_m3 FLOAT,
+	@life_table_m4 FLOAT,
+	@life_table_m5 FLOAT,
 
 	@life_table_f0 FLOAT,
 	@life_table_f1 FLOAT,
-	@life_table_f2 FLOAT
+	@life_table_f2 FLOAT,
+	@life_table_f3 FLOAT,
+	@life_table_f4 FLOAT,
+	@life_table_f5 FLOAT
 
 AS
 BEGIN
@@ -687,24 +685,33 @@ BEGIN
 		PRINT ('Iterating population for date: ' + CAST(@current_date AS VARCHAR))
 
 		-- deaths
-		; WITH cte
+		; WITH cte1
 		AS
 		(
 			SELECT
 				p.person_id,
 				date_of_birth,
-				DATEDIFF(YEAR, p.date_of_birth, @current_date) age,
-
-				-- Calculate survival rate
-				CASE
-					WHEN p.sex = 'M' THEN (@life_table_m2 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 2)) + (@life_table_m1 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 1)) + (@life_table_m0 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 0))
-					WHEN p.sex = 'F' THEN (@life_table_f2 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 2)) + (@life_table_f1 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 1)) + (@life_table_f0 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 0))
-				END survival_rate,
-				(0.0 + ABS(CHECKSUM(NewId())) %  CAST(POWER(2.0, 31) -1 AS INT)) / CAST(POWER(2.0, 31) -1 AS INT) random_survive
+				p.sex,
+				CAST(DATEDIFF(YEAR, p.date_of_birth, @current_date) AS bigint) age
 			FROM
 				@people p
 			WHERE
 				date_of_death IS NULL
+		)
+		, cte2
+		AS
+		(
+			SELECT
+				*,
+
+				-- Calculate survival rate
+				CASE
+					WHEN c.sex = 'M' THEN ((@life_table_m5 * POWER(age, 5)) + (@life_table_m4 * POWER(age, 4)) + (@life_table_m3 * POWER(age, 3)) +(@life_table_m2 * POWER(age, 2)) + (@life_table_m1 * POWER(age, 1)) + (@life_table_m0 * POWER(age, 0))) / 365.25
+					WHEN c.sex = 'F' THEN ((@life_table_f5 * POWER(age, 5)) + (@life_table_f4 * POWER(age, 4)) + (@life_table_f3 * POWER(age, 3)) +(@life_table_f2 * POWER(age, 2)) + (@life_table_f1 * POWER(age, 1)) + (@life_table_f0 * POWER(age, 0))) / 365.25
+				END survival_rate,
+				(0.0 + ABS(CHECKSUM(NewId())) %  CAST(POWER(2.0, 31) -1 AS INT)) / CAST(POWER(2.0, 31) -1 AS INT) random_survive
+			FROM
+				cte1 c
 		)
 
 		UPDATE
@@ -714,31 +721,40 @@ BEGIN
 		FROM
 			@people p
 		INNER JOIN
-			cte c
+			cte2 c
 		ON
 			p.person_id = c.person_id
 		WHERE
 			random_survive <= survival_rate
 
 		-- births
-		; WITH cte
+		; WITH cte1
 		AS
 		(
 			SELECT
 				p.person_id,
-				@birth_date_per_1000_per_year / 1000 / 365.25 birth_rate,	-- birth rate - set 12.5 per 1000 people per year
+				@birth_rate_per_1000_per_year / 1000 / 365.25 birth_rate,
 				(0.0 + ABS(CHECKSUM(NewId())) %  CAST(POWER(2.0, 31) -1 AS INT)) / CAST(POWER(2.0, 31) -1 AS INT) random
 			FROM
 				@people p
 			WHERE
 				date_of_death IS NULL
 		)
+		, cte2
+		AS
+		(
+			SELECT
+				*,
+				CASE WHEN random <= birth_rate THEN 'YES' ELSE '' END OK
+			FROM
+				cte1
+		)
 
 		INSERT INTO
 			@people (sex, date_of_birth)
 		SELECT
 			CASE
-				WHEN (
+				WHEN (0.0 +
 					ABS(
 						CHECKSUM(NewId())
 						) % CAST(POWER(2.0, 31) -1 AS INT)
@@ -748,7 +764,7 @@ BEGIN
 			END,
 			@current_date
 		FROM
-			cte c
+			cte2 c
 		INNER JOIN
 			@people p
 		ON
@@ -756,19 +772,39 @@ BEGIN
 		WHERE
 			c.random <= c.birth_rate
 
-
 		SET @current_date = DATEADD(DD, 1, @current_date)
 	END
 
-	SELECT *, DATEDIFF(YEAR, date_of_birth, date_of_death) FROM @people WHERE 
-		(date_of_death IS NULL OR
-		date_of_death >= @start_date) AND
+	-- return population who were alive at any time between start
+	-- date and end date
+	SELECT *, DATEDIFF(YEAR, date_of_birth, date_of_death) FROM @people
+	WHERE 
+		(
+		date_of_death IS NULL
+		--OR date_of_death >= @start_date
+		) AND
 		date_of_birth < @end_date
 	ORDER BY date_of_birth
 END
-GO
 
-EXEC staging.sp_person_generate_population '20000101', '20241027', 1000
+EXEC staging.sp_person_generate_population
+	'20000101',
+	'20241027',
+	1000,
+	@birth_rate_per_1000_per_year,
+	@boy_birth_ratio,
+	@life_table_m0,
+	@life_table_m1,
+	@life_table_m2,
+	@life_table_m3,
+	@life_table_m4,
+	@life_table_m5,
+	@life_table_f0,
+	@life_table_f1,
+	@life_table_f2,
+	@life_table_f3,
+	@life_table_f4,
+	@life_table_f5
 GO
 
 -- =============================================

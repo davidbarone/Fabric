@@ -39,12 +39,18 @@ BEGIN
 		DECLARE @new_customer_rate FLOAT = 0.001						-- Rate at which a new customer opens first account at bank
 		DECLARE @days_history INT = 10 * 365.25							-- number of days history to generate
 		DECLARE @start_date DATE = DATEADD(DAY, -@days_history, @today)	-- start date
-		DECLARE @life_table_m0 FLOAT = 0.00003							-- Life table linear model (male) coefficient order 0
-		DECLARE @life_table_m1 FLOAT = 0.00003							-- Life table linear model (male) coefficient order 1
-		DECLARE @life_table_m2 FLOAT = 0.00035							-- Life table linear model (male) coefficient order 2
-		DECLARE @life_table_f0 FLOAT = 0.00003							-- Life table linear model (female) coefficient order 0
-		DECLARE @life_table_f1 FLOAT = 0.00003							-- Life table linear model (female) coefficient order 1
-		DECLARE @life_table_f2 FLOAT = 0.00030							-- Life table linear model (female) coefficient order 2
+		DECLARE @life_table_m0 FLOAT = 0.0002							-- Life table linear model (male) coefficient order 0
+		DECLARE @life_table_m1 FLOAT = 0.0								-- Life table linear model (male) coefficient order 1
+		DECLARE @life_table_m2 FLOAT = 0.0								-- Life table linear model (male) coefficient order 2
+		DECLARE @life_table_m3 FLOAT = 0.0								-- Life table linear model (male) coefficient order 2
+		DECLARE @life_table_m4 FLOAT = -0.000000001						-- Life table linear model (male) coefficient order 2
+		DECLARE @life_table_m5 FLOAT = 0.00000000005					-- Life table linear model (male) coefficient order 2
+		DECLARE @life_table_f0 FLOAT = 0.0002							-- Life table linear model (female) coefficient order 0
+		DECLARE @life_table_f1 FLOAT = 0.0								-- Life table linear model (female) coefficient order 1
+		DECLARE @life_table_f2 FLOAT = 0.0								-- Life table linear model (female) coefficient order 2
+		DECLARE @life_table_f3 FLOAT = 0.0								-- Life table linear model (female) coefficient order 2
+		DECLARE @life_table_f4 FLOAT = -0.000000001						-- Life table linear model (female) coefficient order 2
+		DECLARE @life_table_f5 FLOAT = 0.00000000004					-- Life table linear model (female) coefficient order 2
 		DECLARE @birth_rate_per_1000_per_year FLOAT = 12.5				-- Birth rate per 1000 per year
 		DECLARE @boy_birth_ratio FLOAT = 104.0/204						-- ratio of boys born
 
