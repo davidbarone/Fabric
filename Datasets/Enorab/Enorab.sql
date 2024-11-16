@@ -30,22 +30,6 @@ BEGIN
 
 	-- 2. Configuration
 	BEGIN
-		TRUNCATE TABLE staging.configuration
-
-		INSERT INTO staging.configuration (configuration_name, configuration_value, configuration_description)
-		SELECT 'new_branch_open_rate', 0.04, 'Daily rate that a new branch opens.' UNION ALL
-		SELECT 'marrying_rate', 0.2, 'Marrying rate for people.' UNION ALL
-		SELECT 'marry_with_year_range', 5, 'Only marry people within this many years age.' UNION ALL
-		SELECT 'account_create_rate', 0.001, 'The daily rate of an individual creating a new investment account.' UNION ALL
-		SELECT 'new_customer_rate', 0.001, 'Rate at which a new customer opens first account at bank.' UNION ALL
-		SELECT 'days_history', 3652.5, 'Number of days history to generate' UNION ALL
-		SELECT 'life_table_m0', 0.00003, 'Life table linear model (male) coefficient order 0.' UNION ALL
-		SELECT 'life_table_m1', 0.00003, 'Life table linear model (male) coefficient order 1.' UNION ALL
-		SELECT 'life_table_m2', 0.00035, 'Life table linear model (male) coefficient order 2.' UNION ALL
-		SELECT 'life_table_f0', 0.00003, 'Life table linear model (female) coefficient order 0.' UNION ALL
-		SELECT 'life_table_f1', 0.00003, 'Life table linear model (female) coefficient order 1.' UNION ALL
-		SELECT 'life_table_f2', 0.00030, 'Life table linear model (female) coefficient order 2.'
-
 		DECLARE @reference_date DATE = '20241013'						-- Date used on any static datasets. All static dates to be adjusted relative to this date.
 		DECLARE @today DATE = GETDATE()									-- Today's date
 		DECLARE @new_branch_open_rate FLOAT = 4.0/100;					-- daily rate that a new branch opens
@@ -55,6 +39,14 @@ BEGIN
 		DECLARE @new_customer_rate FLOAT = 0.001						-- Rate at which a new customer opens first account at bank
 		DECLARE @days_history INT = 10 * 365.25							-- number of days history to generate
 		DECLARE @start_date DATE = DATEADD(DAY, -@days_history, @today)	-- start date
+		DECLARE @life_table_m0 FLOAT = 0.00003							-- Life table linear model (male) coefficient order 0
+		DECLARE @life_table_m1 FLOAT = 0.00003							-- Life table linear model (male) coefficient order 1
+		DECLARE @life_table_m2 FLOAT = 0.00035							-- Life table linear model (male) coefficient order 2
+		DECLARE @life_table_f0 FLOAT = 0.00003							-- Life table linear model (female) coefficient order 0
+		DECLARE @life_table_f1 FLOAT = 0.00003							-- Life table linear model (female) coefficient order 1
+		DECLARE @life_table_f2 FLOAT = 0.00030							-- Life table linear model (female) coefficient order 2
+		DECLARE @birth_rate_per_1000_per_year FLOAT = 12.5				-- Birth rate per 1000 per year
+		DECLARE @boy_birth_ratio FLOAT = 104.0/204						-- ratio of boys born
 
 		-- validations
 		IF @days_history < 100 OR @days_history > 10000
@@ -62,7 +54,7 @@ BEGIN
 			raiserror('Configuration error: days_history must be between 100 and 10000', 20, -1)
 		END
 
-		-- display
+		-- display configurations
 		SELECT
 			'start_date' CONFIGURATION,
 			CAST(@start_date AS VARCHAR) VALUE,
@@ -118,7 +110,7 @@ BEGIN
 	BEGIN
 		PRINT('Creating calendar for period 1900-2099...')
 		TRUNCATE TABLE staging.date_table;
-		INSERT INTO staging.date_table SELECT * FROM staging.fn_dates ('20000101', '20991231');
+		INSERT INTO staging.date_table SELECT * FROM staging.fn_dates ('19000101', '20991231');
 	END
 
 	-- 3.2 staging.person table

@@ -35,7 +35,6 @@ DROP SEQUENCE IF EXISTS seq_branch
 DROP VIEW IF EXISTS staging.vw_region
 DROP VIEW IF EXISTS vw_date_table
 
-DROP TABLE IF EXISTS staging.configuration
 DROP TABLE IF EXISTS staging.date_table
 DROP TABLE IF EXISTS staging.interest_rate
 DROP TABLE IF EXISTS staging.life_table
@@ -61,13 +60,6 @@ GO
 ---------------------------------------------
 -- Tables
 ---------------------------------------------
-
-CREATE TABLE [staging].[configuration](
-	[configuration_name] [varchar](50) NOT NULL PRIMARY KEY,
-	[configuration_value] [nchar](10) NOT NULL,
-	[configuration_description] [varchar](250) NOT NULL
-) ON [PRIMARY]
-GO
 
 CREATE TABLE staging.interest_rate (
 	interest_rate_id INT NOT NULL,
@@ -617,6 +609,14 @@ GO
 -- Procedures
 ---------------------------------------------
 
+USE [Enorab]
+GO
+/****** Object:  StoredProcedure [staging].[sp_person_generate_population]    Script Date: 16/11/2024 4:06:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 -- =============================================
 -- Object:		staging.sp_person_generate_population
 -- Type:		PROCEDURE
@@ -631,15 +631,27 @@ GO
 -- d) create population (n) at epoch date with age
 -- 	  following linear distribution of ages between 0 and 100
 -- e) play the following daily algorithm:
--- f) new births at rate of 12.5 per 1000 per year. 104 boys to 100 girls
--- g) deaths follow life_table rates
+-- f) new births at rate of @birth_date_per_1000_per_year. Boy ratio is @boy_birth_ratio
+-- g) deaths based on life polymonial function, based on age/sex
 -- i) repeat daily process until end date
 -- j) if population > n, then randomly remove people
 -- =============================================
-ALTER PROCEDURE staging.sp_person_generate_population
+ALTER PROCEDURE [staging].[sp_person_generate_population]
 	@start_date DATE,
 	@end_date DATE,
-	@required_population INT
+	@required_population INT,
+
+	@birth_date_per_1000_per_year FLOAT,
+	@boy_birth_ratio FLOAT,
+
+	@life_table_m0 FLOAT,
+	@life_table_m1 FLOAT,
+	@life_table_m2 FLOAT,
+
+	@life_table_f0 FLOAT,
+	@life_table_f1 FLOAT,
+	@life_table_f2 FLOAT
+
 AS
 BEGIN
 
@@ -654,6 +666,7 @@ BEGIN
 		date_of_death DATE NULL
 	)
 
+	-- Set starting population at epoch.
 	DECLARE @i INT = 0
 	WHILE @i < @required_population
 	BEGIN
@@ -666,6 +679,7 @@ BEGIN
 
 	--SELECT * FROM @people
 
+	-- Iterate through to end date
 	DECLARE @current_date DATE = @epoch
 	WHILE @current_date < @end_date
 	BEGIN
@@ -680,14 +694,15 @@ BEGIN
 				p.person_id,
 				date_of_birth,
 				DATEDIFF(YEAR, p.date_of_birth, @current_date) age,
-				(CASE WHEN p.sex = 'M' THEN lt.male_rate ELSE female_rate END) / 365.25 survival_rate,
+
+				-- Calculate survival rate
+				CASE
+					WHEN p.sex = 'M' THEN (@life_table_m2 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 2)) + (@life_table_m1 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 1)) + (@life_table_m0 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 0))
+					WHEN p.sex = 'F' THEN (@life_table_f2 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 2)) + (@life_table_f1 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 1)) + (@life_table_f0 * POWER(DATEDIFF(YEAR, p.date_of_birth, @current_date), 0))
+				END survival_rate,
 				(0.0 + ABS(CHECKSUM(NewId())) %  CAST(POWER(2.0, 31) -1 AS INT)) / CAST(POWER(2.0, 31) -1 AS INT) random_survive
 			FROM
 				@people p
-			LEFT OUTER JOIN
-				staging.life_table lt
-			ON
-				CASE WHEN DATEDIFF(YEAR, p.date_of_birth, @current_date) > 99 THEN 99 ELSE DATEDIFF(YEAR, p.date_of_birth, @current_date) END  = lt.age
 			WHERE
 				date_of_death IS NULL
 		)
@@ -711,7 +726,7 @@ BEGIN
 		(
 			SELECT
 				p.person_id,
-				12.5 / 1000 / 365.25 birth_rate,	-- birth rate - set 12.5 per 1000 people per year
+				@birth_date_per_1000_per_year / 1000 / 365.25 birth_rate,	-- birth rate - set 12.5 per 1000 people per year
 				(0.0 + ABS(CHECKSUM(NewId())) %  CAST(POWER(2.0, 31) -1 AS INT)) / CAST(POWER(2.0, 31) -1 AS INT) random
 			FROM
 				@people p
@@ -727,23 +742,34 @@ BEGIN
 					ABS(
 						CHECKSUM(NewId())
 						) % CAST(POWER(2.0, 31) -1 AS INT)
-					) / CAST(POWER(2.0, 31) -1 AS INT) <= (104.0/100)
+					) / CAST(POWER(2.0, 31) -1 AS INT) <= @boy_birth_ratio
 				THEN 'M'
 				ELSE 'F'
 			END,
 			@current_date
+		FROM
+			cte c
+		INNER JOIN
+			@people p
+		ON
+			p.person_id = c.person_id
+		WHERE
+			c.random <= c.birth_rate
+
 
 		SET @current_date = DATEADD(DD, 1, @current_date)
 	END
+
 	SELECT *, DATEDIFF(YEAR, date_of_birth, date_of_death) FROM @people WHERE 
 		(date_of_death IS NULL OR
 		date_of_death >= @start_date) AND
 		date_of_birth < @end_date
-	ORDER BY DATEDIFF(YEAR, date_of_birth, date_of_death)
+	ORDER BY date_of_birth
 END
 GO
 
 EXEC staging.sp_person_generate_population '20000101', '20241027', 1000
+GO
 
 -- =============================================
 -- Object:		staging.sp_person_die
