@@ -53,7 +53,7 @@ BEGIN
 		DECLARE @birth_rate_per_1000_per_year FLOAT = 18				-- Birth rate per 1000 per year
 		DECLARE @boy_birth_ratio FLOAT = 104.0/204						-- ratio of boys born
 		DECLARE @population_epoch INT = 1000							-- used to generate population
-		DECLARE @epoch_days INT = 10*365								-- days prior to the start date, to start generating a population
+		DECLARE @epoch_days INT = 100*365								-- days prior to the start date, to start generating a population
 
 		-- validations
 		IF @days_history < 100 OR @days_history > 10000
@@ -193,6 +193,7 @@ BEGIN
 	-- 4. Reference data (static)
 	-------------------------------------
 	BEGIN
+		TRUNCATE TABLE product_type;
 		INSERT INTO product_type
 		SELECT 1, 'Everyday Account', 'Everyday transactional / checking account', 0, 1, 1, 0, 1, 1 UNION ALL
 		SELECT 2, 'Savings Account', 'Used to save money', 0, 1, 0, 0, 1, 0 UNION ALL

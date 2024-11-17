@@ -884,7 +884,7 @@ BEGIN
 	WHERE 
 		(
 		date_of_death IS NULL
-		--OR date_of_death >= @start_date
+		OR date_of_death >= @start_date
 		) AND
 		date_of_birth < @end_date
 	ORDER BY date_of_birth
