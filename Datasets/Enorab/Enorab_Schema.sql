@@ -31,6 +31,7 @@ DROP FUNCTION IF EXISTS staging.fn_date_to_int
 DROP FUNCTION IF EXISTS staging.fn_dates
 DROP PROCEDURE IF EXISTS staging.sp_person_marry
 DROP PROCEDURE IF EXISTS sp_calculate_interest_rate
+DROP PROCEDURE IF EXISTS staging.sp_person_generate_population
 
 DROP SEQUENCE IF EXISTS seq_branch
 DROP VIEW IF EXISTS staging.vw_region
@@ -216,7 +217,7 @@ AS
 BEGIN
 	-- Fill the table variable with the rows for your result set
 
-	DECLARE @age INT
+	DECLARE @age BIGINT
 	SET @age = 0
 	WHILE @age <= 130
 	BEGIN
@@ -678,9 +679,10 @@ GO
 -- i) repeat daily process until end date
 -- j) if population > n, then randomly remove people
 -- =============================================
-ALTER PROCEDURE [staging].[sp_person_generate_population]
+CREATE PROCEDURE [staging].[sp_person_generate_population]
 	@start_date DATE,
 	@end_date DATE,
+	@population_generate_prefill_days INT,
 	@required_population INT,
 
 	@birth_rate_per_1000_per_year FLOAT,
@@ -705,7 +707,7 @@ BEGIN
 
 	SET NOCOUNT ON
 
-	DECLARE @epoch DATE = DATEADD(YEAR, -100, @start_date)
+	DECLARE @epoch DATE = DATEADD(DAY, -@population_generate_prefill_days, @start_date)
 
 	DECLARE @people TABLE (
 		person_id INT IDENTITY(1,1),
@@ -856,26 +858,6 @@ BEGIN
 		date_of_birth < @end_date
 	ORDER BY date_of_birth
 END
-GO
-
-EXEC staging.sp_person_generate_population
-	'20000101',
-	'20241027',
-	1000,
-	@birth_rate_per_1000_per_year,
-	@boy_birth_ratio,
-	@life_table_m0,
-	@life_table_m1,
-	@life_table_m2,
-	@life_table_m3,
-	@life_table_m4,
-	@life_table_m5,
-	@life_table_f0,
-	@life_table_f1,
-	@life_table_f2,
-	@life_table_f3,
-	@life_table_f4,
-	@life_table_f5
 GO
 
 -- =============================================

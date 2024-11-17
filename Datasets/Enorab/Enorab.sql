@@ -54,6 +54,7 @@ BEGIN
 		DECLARE @birth_rate_per_1000_per_year FLOAT = 18				-- Birth rate per 1000 per year
 		DECLARE @boy_birth_ratio FLOAT = 104.0/204						-- ratio of boys born
 		DECLARE @starting_population INT = 1000							-- used to generate population
+		DECLARE @population_generate_prefill_days INT = 10*365			-- days prior to the start date, to start generating a population
 
 		-- validations
 		IF @days_history < 100 OR @days_history > 10000
@@ -163,6 +164,30 @@ BEGIN
 		INSERT INTO staging.life_table SELECT * FROM staging.fn_life_table(@life_table_json)
 	END
 
+	-- 3.5 Generate population
+	-- Generates a population using a number of models for
+	-- births, deaths, marriages etc.
+	BEGIN
+		EXEC staging.sp_person_generate_population
+			@start_date,
+			@today,
+			@population_generate_prefill_days,
+			1000,
+			@birth_rate_per_1000_per_year,
+			@boy_birth_ratio,
+			@life_table_m0,
+			@life_table_m1,
+			@life_table_m2,
+			@life_table_m3,
+			@life_table_m4,
+			@life_table_m5,
+			@life_table_f0,
+			@life_table_f1,
+			@life_table_f2,
+			@life_table_f3,
+			@life_table_f4,
+			@life_table_f5
+	END
 	-------------------------------------
 	-- 4. Main daily data generation
 	-------------------------------------
