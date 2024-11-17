@@ -22,6 +22,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- Drop objects
+DROP FUNCTION IF EXISTS staging.fn_person_generate_life_table
 DROP FUNCTION IF EXISTS staging.fn_person
 DROP FUNCTION IF EXISTS staging.fn_address
 DROP FUNCTION IF EXISTS staging.fn_interest_rate
@@ -182,6 +183,55 @@ GO
 ---------------------------------------------
 -- Functions
 ---------------------------------------------
+
+-- =============================================
+-- Author:		D.Barone
+-- Create date: 20241117
+-- Description:	Generates a life table.
+-- =============================================
+CREATE FUNCTION staging.fn_person_generate_life_table
+(
+	-- polynomial coefficients:
+	@m0 FLOAT,
+	@m1 FLOAT,
+	@m2 FLOAT,
+	@m3 FLOAT,
+	@m4 FLOAT,
+	@m5 FLOAT,
+	@f0 FLOAT,
+	@f1 FLOAT,
+	@f2 FLOAT,
+	@f3 FLOAT,
+	@f4 FLOAT,
+	@f5 FLOAT
+)
+RETURNS 
+@output TABLE
+(
+	age INT,
+	male_rate FLOAT,
+	female_rate FLOAT
+)
+AS
+BEGIN
+	-- Fill the table variable with the rows for your result set
+
+	DECLARE @age INT
+	SET @age = 0
+	WHILE @age <= 130
+	BEGIN
+		INSERT INTO @output (age, male_rate, female_rate)
+		SELECT
+			@age,
+			((@m5 * POWER(@age, 5)) + (@m4 * POWER(@age, 4)) + (@m3 * POWER(@age, 3)) +(@m2 * POWER(@age, 2)) + (@m1 * POWER(@age, 1)) + (@m0 * POWER(@age, 0))),
+			((@f5 * POWER(@age, 5)) + (@f4 * POWER(@age, 4)) + (@f3 * POWER(@age, 3)) +(@f2 * POWER(@age, 2)) + (@f1 * POWER(@age, 1)) + (@f0 * POWER(@age, 0)))
+
+		SET @age = @age + 1
+	END
+
+	RETURN 
+END
+GO
 
 -- =============================================
 -- Object:		staging.fn_date_to_int
@@ -682,7 +732,7 @@ BEGIN
 	WHILE @current_date < @end_date
 	BEGIN
 		DECLARE @msg VARCHAR(250)
-		PRINT ('Iterating population for date: ' + CAST(@current_date AS VARCHAR))
+		--PRINT ('Iterating population for date: ' + CAST(@current_date AS VARCHAR))
 
 		-- deaths
 		; WITH cte1
@@ -692,6 +742,7 @@ BEGIN
 				p.person_id,
 				date_of_birth,
 				p.sex,
+				p.date_of_death,
 				CAST(DATEDIFF(YEAR, p.date_of_birth, @current_date) AS bigint) age
 			FROM
 				@people p
@@ -702,16 +753,35 @@ BEGIN
 		AS
 		(
 			SELECT
-				*,
+				c.*,
 
 				-- Calculate survival rate
 				CASE
-					WHEN c.sex = 'M' THEN ((@life_table_m5 * POWER(age, 5)) + (@life_table_m4 * POWER(age, 4)) + (@life_table_m3 * POWER(age, 3)) +(@life_table_m2 * POWER(age, 2)) + (@life_table_m1 * POWER(age, 1)) + (@life_table_m0 * POWER(age, 0))) / 365.25
-					WHEN c.sex = 'F' THEN ((@life_table_f5 * POWER(age, 5)) + (@life_table_f4 * POWER(age, 4)) + (@life_table_f3 * POWER(age, 3)) +(@life_table_f2 * POWER(age, 2)) + (@life_table_f1 * POWER(age, 1)) + (@life_table_f0 * POWER(age, 0))) / 365.25
+					WHEN c.sex = 'M' THEN lt.male_rate / 365.25
+					WHEN c.sex = 'F' THEN lt.female_rate / 365.25
 				END survival_rate,
 				(0.0 + ABS(CHECKSUM(NewId())) %  CAST(POWER(2.0, 31) -1 AS INT)) / CAST(POWER(2.0, 31) -1 AS INT) random_survive
 			FROM
 				cte1 c
+			INNER JOIN
+				staging.fn_person_generate_life_table (
+					@life_table_m0,
+					@life_table_m1,
+					@life_table_m2,
+					@life_table_m3,
+					@life_table_m4,
+					@life_table_m5,
+					@life_table_f0,
+					@life_table_f1,
+					@life_table_f2,
+					@life_table_f3,
+					@life_table_f4,
+					@life_table_f5
+				) lt
+			ON
+				c.age = lt.age
+			WHERE
+				date_of_death IS NULL
 		)
 
 		UPDATE
@@ -786,6 +856,7 @@ BEGIN
 		date_of_birth < @end_date
 	ORDER BY date_of_birth
 END
+GO
 
 EXEC staging.sp_person_generate_population
 	'20000101',

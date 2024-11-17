@@ -51,8 +51,9 @@ BEGIN
 		DECLARE @life_table_f3 FLOAT = 0.0								-- Life table linear model (female) coefficient order 2
 		DECLARE @life_table_f4 FLOAT = -0.000000001						-- Life table linear model (female) coefficient order 2
 		DECLARE @life_table_f5 FLOAT = 0.00000000004					-- Life table linear model (female) coefficient order 2
-		DECLARE @birth_rate_per_1000_per_year FLOAT = 12.5				-- Birth rate per 1000 per year
+		DECLARE @birth_rate_per_1000_per_year FLOAT = 18				-- Birth rate per 1000 per year
 		DECLARE @boy_birth_ratio FLOAT = 104.0/204						-- ratio of boys born
+		DECLARE @starting_population INT = 1000							-- used to generate population
 
 		-- validations
 		IF @days_history < 100 OR @days_history > 10000
