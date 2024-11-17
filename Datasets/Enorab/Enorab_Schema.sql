@@ -31,7 +31,7 @@ DROP FUNCTION IF EXISTS staging.fn_date_to_int
 DROP FUNCTION IF EXISTS staging.fn_dates
 DROP PROCEDURE IF EXISTS staging.sp_person_marry
 DROP PROCEDURE IF EXISTS sp_calculate_interest_rate
-DROP PROCEDURE IF EXISTS staging.sp_person_generate_population
+DROP PROCEDURE IF EXISTS staging.sp_person_births_deaths_marriages
 
 DROP SEQUENCE IF EXISTS seq_branch
 DROP VIEW IF EXISTS staging.vw_region
@@ -49,7 +49,6 @@ DROP TABLE IF EXISTS branch
 DROP TABLE IF EXISTS interest_rate
 DROP TABLE IF EXISTS product_type
 
-DROP PROCEDURE IF EXISTS staging.sp_person_die
 DROP PROCEDURE IF EXISTS sp_branch_open
 
 -- Drop schema
@@ -84,16 +83,16 @@ CREATE TABLE dbo.interest_rate (
 )
 GO
 
-CREATE TABLE staging.person (
-	person_id INT PRIMARY KEY, 
-	first_name varchar(50), 
-	surname varchar(50), 
-	sex varchar(1), 
-	date_of_birth date,
-	date_of_birth_adjusted DATE,
-	date_of_death date,
-	marrying_type FLOAT,
-	spouse_person_id INT
+CREATE TABLE [staging].[person](
+	[person_id] [int] NOT NULL,
+	[first_name] [varchar](50) NULL,
+	[surname] [varchar](50) NULL,
+	[sex] [varchar](1) NULL,
+	[date_of_birth] [date] NULL,
+	[date_of_marriage] [date] NULL,
+	[mother_id] INT NULL,
+	[spouse_id] INT NULL,
+	[date_of_death] [date] NULL
 )
 GO
 
@@ -675,7 +674,7 @@ GO
 ---------------------------------------------
 
 -- =============================================
--- Object:		staging.sp_person_generate_population
+-- Object:		staging.sp_person_births_deaths_marriages
 -- Type:		PROCEDURE
 -- Author:		David Barone
 -- Create date: 20241026
@@ -683,21 +682,23 @@ GO
 -- Notes:		Algorithm works as follows:
 --
 -- a) Define a start/end date for population
--- b) Define end population required (n)
--- c) define epoch = start date - 100 years
--- d) create population (n) at epoch date with age
--- 	  following linear distribution of ages between 0 and 100
--- e) play the following daily algorithm:
--- f) new births at rate of @birth_date_per_1000_per_year. Boy ratio is @boy_birth_ratio
--- g) deaths based on life polymonial function, based on age/sex
--- i) repeat daily process until end date
--- j) if population > n, then randomly remove people
+-- b) Define period of time before the start date to build population
+-- c) Start date of the period before start date know as 'epoch' date
+-- d) Define population at epoch date
+-- d) create random population at epoch date with age
+-- 	  following linear distribution of ages between 0 and 100 and 50/50 split on sex
+-- e) algorithm then iterates daily:
+--		- calculate deaths each day based on life table polynomial model
+--		- calculate births each day based on fixed birth rate
+--		- calculate marriages (TBD)
+-- f) repeat daily process until end date
+-- j) return final results
 -- =============================================
-CREATE PROCEDURE [staging].[sp_person_generate_population]
+CREATE PROCEDURE [staging].[sp_person_births_deaths_marriages]
 	@start_date DATE,
 	@end_date DATE,
-	@population_generate_prefill_days INT,
-	@required_population INT,
+	@epoch_days INT,
+	@population_epoch INT,
 
 	@birth_rate_per_1000_per_year FLOAT,
 	@boy_birth_ratio FLOAT,
@@ -721,18 +722,23 @@ BEGIN
 
 	SET NOCOUNT ON
 
-	DECLARE @epoch DATE = DATEADD(DAY, -@population_generate_prefill_days, @start_date)
+	DECLARE @epoch DATE = DATEADD(DAY, -@epoch_days, @start_date)
 
 	DECLARE @people TABLE (
-		person_id INT IDENTITY(1,1),
-		sex CHAR(1),
-		date_of_birth DATE,
+		person_id INT IDENTITY(1,1) NOT NULL,
+		first_name VARCHAR(50) NULL,
+		last_name VARCHAR(50) NULL,
+		sex CHAR(1) NOT NULL,
+		date_of_birth DATE NOT NULL,
+		date_of_marriage DATE,	-- assume can only marry once
+		mother_id INT,			-- links a child with its maternal parent
+		spouse_id INT,			-- links a person with their spouse
 		date_of_death DATE NULL
 	)
 
 	-- Set starting population at epoch.
 	DECLARE @i INT = 0
-	WHILE @i < @required_population
+	WHILE @i < @population_epoch
 	BEGIN
 		DECLARE @random FLOAT = RAND()
 		DECLARE @days_alive INT
@@ -863,7 +869,18 @@ BEGIN
 
 	-- return population who were alive at any time between start
 	-- date and end date
-	SELECT *, DATEDIFF(YEAR, date_of_birth, date_of_death) FROM @people
+	SELECT
+		person_id,
+		first_name,
+		last_name,
+		sex,
+		date_of_birth,
+		date_of_marriage,
+		mother_id,
+		spouse_id,
+		date_of_death
+	FROM
+		@people
 	WHERE 
 		(
 		date_of_death IS NULL
@@ -871,69 +888,11 @@ BEGIN
 		) AND
 		date_of_birth < @end_date
 	ORDER BY date_of_birth
+
 END
 GO
 
--- =============================================
--- Object:		staging.sp_person_die
--- Type:		PROCEDURE
--- Author:		David Barone
--- Create date: 20241026
--- Description:	decease people using life table.
--- =============================================
-CREATE PROCEDURE staging.sp_person_die
-	@date DATE
-AS
-BEGIN
-		SET NOCOUNT ON
-
-		DECLARE @date_id INT
-		SELECT @date_id = date_id FROM staging.date_table WHERE calendar_date = @date
-
-		PRINT ('Begin death process...')
-		DECLARE @random FLOAT-- = RAND(@date_id)
-
-		-- Calculate whether person dies today
-		DECLARE @current_person_id INT
-
-		WHILE (1=1)
-		BEGIN
-			DECLARE @next_person_id INT = NULL
-			SELECT @random = RAND()
-
-			DECLARE @next_rate FLOAT
-			SELECT TOP(1)
-				@next_person_id = person_id,
-				@next_rate = (CASE p.sex WHEN 'M' THEN lt.male_rate ELSE lt.female_rate END / 365.25) -- convert to daily rate
-			FROM
-				staging.person p
-			INNER JOIN
-				staging.life_table lt
-			ON DATEDIFF(YEAR, p.date_of_birth_adjusted, @date) = lt.age
-			WHERE
-				date_of_death IS NULL AND
-				person_id > COALESCE(@current_person_id, 0)
-				
-			ORDER BY
-				person_id			
-			
-			IF @next_person_id IS NULL
-			BEGIN
-				BREAK
-			END
-	
-			UPDATE staging.person
-			SET date_of_death = @date
-			WHERE
-				person_id = @next_person_id AND
-				@random < @next_rate
-
-			SET @current_person_id = @next_person_id
-		END
-		PRINT ('End death process...')
-END
-GO
-
+/*
 -- =============================================
 -- Object:		staging.sp_person_marry
 -- Type:		PROCEDURE
@@ -1009,6 +968,7 @@ BEGIN
 
 END
 GO
+*/
 
 -- =============================================
 -- Object:		staging.sp_branch_open

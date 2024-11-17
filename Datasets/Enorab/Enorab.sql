@@ -33,7 +33,6 @@ BEGIN
 		DECLARE @reference_date DATE = '20241013'						-- Date used on any static datasets. All static dates to be adjusted relative to this date.
 		DECLARE @today DATE = GETDATE()									-- Today's date
 		DECLARE @new_branch_open_rate FLOAT = 4.0/100;					-- daily rate that a new branch opens
-		DECLARE @marrying_rate FLOAT = 0.2								-- marrying rate for people
 		DECLARE @marry_within_year_range INT = 5						-- only marry people within this many years age.
 		DECLARE @account_create_rate FLOAT = 0.001						-- This is the daily rate of an individual creating a new investment account
 		DECLARE @new_customer_rate FLOAT = 0.001						-- Rate at which a new customer opens first account at bank
@@ -53,8 +52,8 @@ BEGIN
 		DECLARE @life_table_f5 FLOAT = 0.00000000004					-- Life table linear model (female) coefficient order 2
 		DECLARE @birth_rate_per_1000_per_year FLOAT = 18				-- Birth rate per 1000 per year
 		DECLARE @boy_birth_ratio FLOAT = 104.0/204						-- ratio of boys born
-		DECLARE @starting_population INT = 1000							-- used to generate population
-		DECLARE @population_generate_prefill_days INT = 10*365			-- days prior to the start date, to start generating a population
+		DECLARE @population_epoch INT = 1000							-- used to generate population
+		DECLARE @epoch_days INT = 10*365								-- days prior to the start date, to start generating a population
 
 		-- validations
 		IF @days_history < 100 OR @days_history > 10000
@@ -82,11 +81,6 @@ BEGIN
 			'today',
 			CAST(@today AS VARCHAR),
 			'Today''s date - the last date that data exists in this dataset is @Today - 1.'
-		UNION ALL
-		SELECT
-			'marrying_rate',
-			CAST(@marrying_rate AS VARCHAR),
-			'Rate for marrying people. Value of 1 denotes all people can marry.'
 		UNION ALL
 		SELECT
 			'marry_within_year_range',
@@ -129,8 +123,10 @@ BEGIN
 		FROM OPENROWSET (BULK 'E:\david\github\Power-BI\datasets\enorab\json\person.json', SINGLE_CLOB) import
 		
 		TRUNCATE TABLE staging.person
+		/*
 		INSERT INTO staging.person SELECT *	FROM staging.fn_person(@person_json, @reference_date, @today)
 		EXEC staging.sp_person_marry @marrying_rate, @marry_within_year_range
+		*/
 	END
 
 	-- 3.3 staging.address table
@@ -168,11 +164,15 @@ BEGIN
 	-- Generates a population using a number of models for
 	-- births, deaths, marriages etc.
 	BEGIN
-		EXEC staging.sp_person_generate_population
+
+		-- Generate population
+		TRUNCATE TABLE staging.person
+		INSERT INTO staging.person
+		EXEC staging.sp_person_births_deaths_marriages
 			@start_date,
 			@today,
-			@population_generate_prefill_days,
-			1000,
+			@epoch_days,
+			@population_epoch,
 			@birth_rate_per_1000_per_year,
 			@boy_birth_ratio,
 			@life_table_m0,
@@ -190,7 +190,7 @@ BEGIN
 	END
 
 	-------------------------------------
-	-- 5. Reference data (static)
+	-- 4. Reference data (static)
 	-------------------------------------
 	BEGIN
 		INSERT INTO product_type
@@ -214,7 +214,7 @@ BEGIN
 	END
 
 	-------------------------------------
-	-- 4. Main daily data generation
+	-- 5. Main daily data generation
 	-------------------------------------
 
 	DECLARE @date DATE
@@ -225,45 +225,45 @@ BEGIN
 	WHILE @date < @today
 	BEGIN
 		DECLARE @msg VARCHAR(250)
-		SET @msg = 'Processing date: ' + CAST(@date AS VARCHAR)
+		--SET @msg = 'Processing date: ' + CAST(@date AS VARCHAR)
 		PRINT(@msg)
 		
-		-- 4.1 Create interest rate for day
+		-- 5.1 Create interest rate for day
 		EXEC sp_calculate_interest_rate @date, @start_date
 
-		-- 4.1 Create new branches
+		-- 5.1 Create new branches
 		EXEC sp_branch_open @date, @new_branch_open_rate, @random1, @random2 
 
-		-- 4.2 New people being born in the population
+		-- 5.2 New people being born in the population
 
-		-- 4.3 People dying in the population
-		EXEC staging.sp_person_die @date
+		-- 5.3 People dying in the population
+		--EXEC staging.sp_person_die @date
 
-		-- 4.4 New customer opening new account (invester or borrower)
+		-- 5.4 New customer opening new account (invester or borrower)
 
-		-- 4.4 Existing customers opening a new account
+		-- 5.4 Existing customers opening a new account
 
-		-- 4.5 Transactions on transactional accounts
+		-- 5.5 Transactions on transactional accounts
 
-		-- 4.6 Interest charged on loans
+		-- 5.6 Interest charged on loans
 
-		-- 4.7 Interest charged on overdrawn accounts
+		-- 5.7 Interest charged on overdrawn accounts
 
-		-- 4.8 Calculation of fees (e.g. unauthorised overdraft)
+		-- 5.8 Calculation of fees (e.g. unauthorised overdraft)
 
-		-- 4.9 Calculation of bank interest
+		-- 5.9 Calculation of bank interest
 
-		-- 4.10 Calculation of term deposit interest
+		-- 5.10 Calculation of term deposit interest
 
-		-- 4.11 Rollover of term deposit
+		-- 5.11 Rollover of term deposit
 
-		-- 4.12 Rollover of loan product (fixed rate -> variable rate)
+		-- 5.12 Rollover of loan product (fixed rate -> variable rate)
 		
-		-- 4.13 Existing customers closing an existing account
+		-- 5.13 Existing customers closing an existing account
 
-		-- 4.146 Existing customers leaving bank (closing all accounts)
+		-- 5.146 Existing customers leaving bank (closing all accounts)
 
-		-- 4.xx End of Month
+		-- 5.xx End of Month
 		-- Update parameters (e.g. invest/borrower bias)
 		
 		-- next date
