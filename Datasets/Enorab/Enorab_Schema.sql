@@ -47,6 +47,7 @@ DROP TABLE IF EXISTS person
 DROP TABLE IF EXISTS [address]
 DROP TABLE IF EXISTS branch
 DROP TABLE IF EXISTS interest_rate
+DROP TABLE IF EXISTS product_type
 
 DROP PROCEDURE IF EXISTS staging.sp_person_die
 DROP PROCEDURE IF EXISTS sp_branch_open
@@ -124,6 +125,19 @@ CREATE TABLE branch (
 	branch_name VARCHAR(50) NOT NULL,
 	branch_address_id INT NOT NULL,
 	branch_open_date_id INT NOT NULL
+)
+GO
+
+CREATE TABLE product_type (
+	product_type_id INT NOT NULL PRIMARY KEY ,
+	product_name VARCHAR(50) NOT NULL,
+	product_description VARCHAR(250) NOT NULL,
+	is_loan_type BIT NOT NULL,
+	is_transactional BIT NOT NULL,
+	has_debit_card BIT NOT NULL,
+	has_credit_card BIT NOT NULL,
+	at_call BIT NOT NULL,
+	allow_overdraft BIT NOT NULL
 )
 GO
 

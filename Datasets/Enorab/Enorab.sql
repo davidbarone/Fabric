@@ -188,6 +188,31 @@ BEGIN
 			@life_table_f4,
 			@life_table_f5
 	END
+
+	-------------------------------------
+	-- 5. Reference data (static)
+	-------------------------------------
+	BEGIN
+		INSERT INTO product_type
+		SELECT 1, 'Everyday Account', 'Everyday transactional / checking account', 0, 1, 1, 0, 1, 1 UNION ALL
+		SELECT 2, 'Savings Account', 'Used to save money', 0, 1, 0, 0, 1, 0 UNION ALL
+		SELECT 3, 'High Interest Savings Account', 'High interest savings account - higher rates, but restrictions on withdrawals', 0, 0, 0, 0, 1, 0 UNION ALL
+		SELECT 4, 'Term Deposit', 'Lock money for term for higher rates', 0, 0, 0, 0, 0, 0 UNION ALL
+		SELECT 5, 'Young Saver Account', 'Account for under-18s', 0, 1, 1, 0, 1, 0 UNION ALL
+		SELECT 6, 'Business Account', 'Business bank account', 0, 1, 1, 1, 1, 1 UNION ALL 
+		SELECT 7, 'Offset Account', 'Linked to a home loan account', 0, 1, 1, 0, 1, 1 UNION ALL
+
+		-- Loans
+
+		SELECT 10, 'Home Loan', 'Home loan account', 1, 0, 0, 0, 0, 0 UNION ALL
+		SELECT 11, 'Business Loan', 'Business Loan', 1, 0, 0, 0, 0, 0 UNION ALL
+		SELECT 12, 'Personal Loan', 'Personal Loan', 1, 0, 0, 0, 0, 0 UNION ALL
+
+		-- Credit cards
+		SELECT 20, 'Credit Card Account', 'Account linked to a credit card', 1, 1, 1, 1, 1, 1;
+
+	END
+
 	-------------------------------------
 	-- 4. Main daily data generation
 	-------------------------------------
