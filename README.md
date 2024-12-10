@@ -14,8 +14,18 @@ The following fabric-wide technologies are also detailed in sub-folders:
 - OneLake
 - Purview
 
+Other Azure Features:
+- DevOps
+  
+  
 ## Terms
-
+- https://learn.microsoft.com/en-us/fabric/get-started/fabric-terminology
 
 ## Getting Started
+- https://learn.microsoft.com/en-us/fabric/get-started/
 
+## Starting a Fabric Trial
+- https://learn.microsoft.com/en-us/fabric/get-started/fabric-trial
+
+## Purchasing Fabric
+- https://learn.microsoft.com/en-us/fabric/enterprise/buy-subscription
