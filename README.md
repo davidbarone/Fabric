@@ -17,7 +17,7 @@ The following fabric-wide technologies are also detailed in sub-folders:
 Other Azure Features:
 - DevOps
   
-  
+
 ## Terms
 - https://learn.microsoft.com/en-us/fabric/get-started/fabric-terminology
 
@@ -29,3 +29,10 @@ Other Azure Features:
 
 ## Purchasing Fabric
 - https://learn.microsoft.com/en-us/fabric/enterprise/buy-subscription
+
+
+## Learning Diary
+
+| Date | Area | Course | Url |
+| ---- | ---- | ------ | --- |
+
