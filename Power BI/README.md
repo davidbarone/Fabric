@@ -17,4 +17,10 @@ Contains example styles for use in Power BI reports.
 Learning material, reference guides and examples of DAX queries.
 
 ## General Links
+- https://www.sqlbi.com/ - Marco Russo
+- https://powerbiweekly.info/ - weekly subscription
+- https://xxlbi.com/
+
 General links to Power BI learning materials.
+
+
