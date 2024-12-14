@@ -9,6 +9,16 @@ The AdventureWorks dataset represents a fictional multinational company that sel
 
 The datasets are available in GitHub here: https://github.com/Microsoft/sql-server-samples/releases/tag/adventureworks?ref=hackernoon.com
 
+## SQL Server Samples
+All microsoft sample databases are availablle here: https://github.com/microsoft/sql-server-samples. Includes:
+- Adventure Works
+- Contoso
+- Northwind
+- Wide World Importers
+
+## Wide World Importers
+- https://learn.microsoft.com/en-us/sql/samples/wide-world-importers-oltp-install-configure?view=sql-server-ver16
+
 ## Enorab Bank
 This is a ficticious bank created by myself with a permissive licence.
 
