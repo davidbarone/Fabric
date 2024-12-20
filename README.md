@@ -41,7 +41,16 @@ Other Azure Features:
 
 ## Learning Diary
 
-| Date     | Area     | Provider  | Description                                           | Level    | Url                                                                                                    | Rating |
-| -------- | -------- | --------- | ----------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------ | ------ |
-| 20241214 | Azure    | Microsoft | Microsoft Azure Fundamentals: Describe cloud concepts | Beginner | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/ | **     |
-| 20241220 | Power BI | DataCamp  | Introduction to Power BI                              | Beginner | https://app.datacamp.com/learn/courses/introduction-to-power-bi                                        | ***    |
+| Date     | Area     | Provider  | Description                                           | Level    | Duration | Url                                                                                                                             | Status      | Rating |
+| -------- | -------- | --------- | ----------------------------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------ |
+| 20241214 | Azure    | Microsoft | Microsoft Azure Fundamentals: Describe cloud concepts | Beginner | 1 hr     | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/                          | Done        | **     |
+| 20241220 | Power BI | DataCamp  | Introduction to Power BI                              | Beginner | 4 hr     | https://app.datacamp.com/learn/courses/introduction-to-power-bi                                                                 | Done        | ***    |
+| 20241220 | Azure    | Microsoft |                                                       | Beginner | 1 hr     | https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/3-get-started-azure-accounts | In Progress |        |
+| 20241221 | DAX      | DataCamp  | Introduction to DAX in Power BI                       |          | 3 hr     | https://campus.datacamp.com/courses/introduction-to-dax-in-power-bi/getting-started-with-dax?ex=1                               | In Progress |        |
+
+## 20241220
+
+### https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/3-get-started-azure-accounts
+- Free 12 month azure account: https://azure.microsoft.com/free
+- Support: https://docs.microsoft.com
+- Microsoft learn sandbox - uses your account + creates temporary subscription no cost
