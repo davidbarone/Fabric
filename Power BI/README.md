@@ -16,6 +16,9 @@ Contains example styles for use in Power BI reports.
 ## DAX
 Learning material, reference guides and examples of DAX queries.
 
+## Videos / YouTube
+- Guy in a Cube: https://www.youtube.com/@GuyInACube
+
 ## General Links
 - https://www.sqlbi.com/ - Marco Russo
 - https://powerbiweekly.info/ - weekly subscription
@@ -23,4 +26,6 @@ Learning material, reference guides and examples of DAX queries.
 
 General links to Power BI learning materials.
 
+## Getting Started
+- https://learn.microsoft.com/en-gb/training/modules/get-started-with-power-bi/?WT.mc_id=powerbi_home_inproduct_introcard
 
