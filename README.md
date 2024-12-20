@@ -41,7 +41,7 @@ Other Azure Features:
 
 ## Learning Diary
 
-| Date     | Area     | Provider  | Description                                           | Level    | Url                                                             | Rating |
-| -------- | -------- | --------- | ----------------------------------------------------- | -------- | --------------------------------------------------------------- | ------ |
-| 20241214 | Azure    | Microsoft | Microsoft Azure Fundamentals: Describe cloud concepts | Beginner |                                                                 | **     |
-| 20241220 | Power BI | DataCamp  | Introduction to Power BI                              | Beginner | https://app.datacamp.com/learn/courses/introduction-to-power-bi | ***    |
+| Date     | Area     | Provider  | Description                                           | Level    | Url                                                                                                    | Rating |
+| -------- | -------- | --------- | ----------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------ | ------ |
+| 20241214 | Azure    | Microsoft | Microsoft Azure Fundamentals: Describe cloud concepts | Beginner | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/ | **     |
+| 20241220 | Power BI | DataCamp  | Introduction to Power BI                              | Beginner | https://app.datacamp.com/learn/courses/introduction-to-power-bi                                        | ***    |
