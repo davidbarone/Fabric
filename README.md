@@ -41,12 +41,15 @@ Other Azure Features:
 
 ## Learning Diary
 
-| Date     | Area     | Provider  | Description                                           | Level    | Duration | Url                                                                                                                             | Status      | Rating |
-| -------- | -------- | --------- | ----------------------------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------ |
-| 20241214 | Azure    | Microsoft | Microsoft Azure Fundamentals: Describe cloud concepts | Beginner | 1 hr     | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/                          | Done        | **     |
-| 20241220 | Power BI | DataCamp  | Introduction to Power BI                              | Beginner | 4 hr     | https://app.datacamp.com/learn/courses/introduction-to-power-bi                                                                 | Done        | ***    |
-| 20241220 | Azure    | Microsoft |                                                       | Beginner | 1 hr     | https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/3-get-started-azure-accounts | In Progress |        |
-| 20241221 | DAX      | DataCamp  | Introduction to DAX in Power BI                       |          | 3 hr     | https://campus.datacamp.com/courses/introduction-to-dax-in-power-bi/getting-started-with-dax?ex=1                               | In Progress |        |
+| Date     | Area     | Provider        | Description                                           | Level    | Duration | Url                                                                                                                             | Status      | Rating |
+| -------- | -------- | --------------- | ----------------------------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------ |
+| 20241214 | Azure    | Microsoft       | Microsoft Azure Fundamentals: Describe cloud concepts | Beginner | 1 hr     | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/                          | Completed   | **     |
+| 20241220 | Power BI | DataCamp        | Introduction to Power BI                              | Beginner | 4 hr     | https://app.datacamp.com/learn/courses/introduction-to-power-bi                                                                 | Completed   | ***    |
+| 20241220 | Azure    | Microsoft       |                                                       | Beginner | 1 hr     | https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/3-get-started-azure-accounts | In Progress |        |
+| 20241221 | DAX      | DataCamp        | Introduction to DAX in Power BI                       | Beginner | 3 hr     | https://campus.datacamp.com/courses/introduction-to-dax-in-power-bi/getting-started-with-dax?ex=1                               | Completed   | ****   |
+| 20241222 | DAX      | Alberto Ferrari | DAX 101                                               | Beginner | 2 hr     | https://www.youtube.com/watch?v=klQAZLr5vxA                                                                                     | Completed   | *****  |
+| 20241223 | Power BI | DataCamp        | Data Visualisation in Power BI                        | Beginner | 3 hr     | https://app.datacamp.com/learn/courses/data-visualization-in-power-bi                                                           | Completed   | ***    |
+| 20241225 | DAX      | Alberto Ferrari | Advanced DAX                                          | Advanced | 2 hr     | https://www.youtube.com/watch?v=6ncHnWMEdic                                                                                     | In Progress |        |
 
 ## 20241220
 
@@ -54,3 +57,10 @@ Other Azure Features:
 - Free 12 month azure account: https://azure.microsoft.com/free
 - Support: https://docs.microsoft.com
 - Microsoft learn sandbox - uses your account + creates temporary subscription no cost
+
+### https://app.datacamp.com/learn/courses/data-visualization-in-power-bi
+- 3 things to consider when adding to a dashboard:
+  - Does this contribute to the story? (1 story per page)
+  - Is this the right visual element?
+  - Is this visual element necessary?
+
