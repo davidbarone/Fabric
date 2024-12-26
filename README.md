@@ -65,4 +65,6 @@ Other Azure Features:
   - Is this visual element necessary?
 
 ### 20241226 Advanced DAX
-- Debugging - always ask yourself what is the filter context at each step.
+- Debugging golden rule
+  - Stop thinking
+  - Follow the measure, ask yourself what is the current filter context at each step.
