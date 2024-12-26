@@ -49,7 +49,7 @@ Other Azure Features:
 | 20241221 | DAX      | DataCamp        | Introduction to DAX in Power BI                       | Beginner | 3 hr     | https://campus.datacamp.com/courses/introduction-to-dax-in-power-bi/getting-started-with-dax?ex=1                               | Completed   | ****   |
 | 20241222 | DAX      | Alberto Ferrari | DAX 101                                               | Beginner | 2 hr     | https://www.youtube.com/watch?v=klQAZLr5vxA                                                                                     | Completed   | *****  |
 | 20241223 | Power BI | DataCamp        | Data Visualisation in Power BI                        | Beginner | 3 hr     | https://app.datacamp.com/learn/courses/data-visualization-in-power-bi                                                           | Completed   | ***    |
-| 20241225 | DAX      | Alberto Ferrari | Advanced DAX                                          | Advanced | 2 hr     | https://www.youtube.com/watch?v=6ncHnWMEdic                                                                                     | In Progress |        |
+| 20241225 | DAX      | Alberto Ferrari | Advanced DAX                                          | Advanced | 2 hr     | https://www.youtube.com/watch?v=6ncHnWMEdic                                                                                     | Completed   | *****  |
 
 ## 20241220
 
@@ -64,3 +64,5 @@ Other Azure Features:
   - Is this the right visual element?
   - Is this visual element necessary?
 
+### 20241226 Advanced DAX
+- Debugging - always ask yourself what is the filter context at each step.
