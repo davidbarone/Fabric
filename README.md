@@ -50,6 +50,7 @@ Other Azure Features:
 | 20241222 | DAX      | Alberto Ferrari | DAX 101                                               | Beginner | 2 hr     | https://www.youtube.com/watch?v=klQAZLr5vxA                                                                                     | Completed   | *****  |
 | 20241223 | Power BI | DataCamp        | Data Visualisation in Power BI                        | Beginner | 3 hr     | https://app.datacamp.com/learn/courses/data-visualization-in-power-bi                                                           | Completed   | ***    |
 | 20241225 | DAX      | Alberto Ferrari | Advanced DAX                                          | Advanced | 2 hr     | https://www.youtube.com/watch?v=6ncHnWMEdic                                                                                     | Completed   | *****  |
+| 20241227 | Power BI | DataCamp        | Data Modelling in Power BI                            | Beginner | 3 hr     | https://app.datacamp.com/learn/courses/data-modeling-in-power-bi                                                                | Completed   | ***    |
 
 ## 20241220
 
