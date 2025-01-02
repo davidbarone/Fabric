@@ -41,18 +41,20 @@ Other Azure Features:
 
 ## Learning Diary
 
-| Date     | Area     | Provider                             | Description                                           | Level    | Duration | Url                                                                                                                             | Status      | Rating |
-| -------- | -------- | ------------------------------------ | ----------------------------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------ |
-| 20241214 | Azure    | Microsoft                            | Microsoft Azure Fundamentals: Describe cloud concepts | Beginner | 1 hr     | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/                          | Completed   | **     |
-| 20241220 | Power BI | DataCamp                             | Introduction to Power BI                              | Beginner | 4 hr     | https://app.datacamp.com/learn/courses/introduction-to-power-bi                                                                 | Completed   | ***    |
-| 20241220 | Azure    | Microsoft                            |                                                       | Beginner | 1 hr     | https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/3-get-started-azure-accounts | In Progress |        |
-| 20241221 | DAX      | DataCamp                             | Introduction to DAX in Power BI                       | Beginner | 3 hr     | https://campus.datacamp.com/courses/introduction-to-dax-in-power-bi/getting-started-with-dax?ex=1                               | Completed   | ****   |
-| 20241222 | DAX      | Alberto Ferrari                      | DAX 101                                               | Beginner | 2 hr     | https://www.youtube.com/watch?v=klQAZLr5vxA                                                                                     | Completed   | *****  |
-| 20241223 | Power BI | DataCamp                             | Data Visualisation in Power BI                        | Beginner | 3 hr     | https://app.datacamp.com/learn/courses/data-visualization-in-power-bi                                                           | Completed   | ***    |
-| 20241225 | DAX      | Alberto Ferrari                      | Advanced DAX                                          | Advanced | 2 hr     | https://www.youtube.com/watch?v=6ncHnWMEdic                                                                                     | Completed   | *****  |
-| 20241227 | Power BI | DataCamp                             | Data Modelling in Power BI                            | Beginner | 3 hr     | https://app.datacamp.com/learn/courses/data-modeling-in-power-bi                                                                | Completed   | ***    |
-| 20241228 | DAX      | DataCamp                             | DAX Functions in Power BI                             | Beginner | 3 hr     | https://app.datacamp.com/learn/courses/dax-functions-in-power-bi                                                                | Completed   | **     |
-|          | DAX      | Havens Consulting (w. Danii Maslyuk) | DAX Anti-Patterns Ep. #1                              |          |          | https://www.bing.com/videos/riverview/relatedvideo?q=DAX+antipatterns&&mid=47388F15671A2C592BC747388F15671A2C592BC7&FORM=VCGVRP |             |        |
+| Date     | Area     | Provider                             | Description                                           | Level        | Duration | Url                                                                                                                             | Status      | Rating |
+| -------- | -------- | ------------------------------------ | ----------------------------------------------------- | ------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------ |
+| 20241214 | Azure    | Microsoft                            | Microsoft Azure Fundamentals: Describe cloud concepts | Beginner     | 1 hr     | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/                          | Completed   | **     |
+| 20241220 | Power BI | DataCamp                             | Introduction to Power BI                              | Beginner     | 4 hr     | https://app.datacamp.com/learn/courses/introduction-to-power-bi                                                                 | Completed   | ***    |
+| 20241220 | Azure    | Microsoft                            |                                                       | Beginner     | 1 hr     | https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/3-get-started-azure-accounts | In Progress |        |
+| 20241221 | DAX      | DataCamp                             | Introduction to DAX in Power BI                       | Beginner     | 3 hr     | https://campus.datacamp.com/courses/introduction-to-dax-in-power-bi/getting-started-with-dax?ex=1                               | Completed   | ****   |
+| 20241222 | DAX      | Alberto Ferrari                      | DAX 101                                               | Beginner     | 2 hr     | https://www.youtube.com/watch?v=klQAZLr5vxA                                                                                     | Completed   | *****  |
+| 20241223 | Power BI | DataCamp                             | Data Visualisation in Power BI                        | Beginner     | 3 hr     | https://app.datacamp.com/learn/courses/data-visualization-in-power-bi                                                           | Completed   | ***    |
+| 20241225 | DAX      | Alberto Ferrari                      | Advanced DAX                                          | Advanced     | 2 hr     | https://www.youtube.com/watch?v=6ncHnWMEdic                                                                                     | Completed   | *****  |
+| 20241227 | Power BI | DataCamp                             | Data Modelling in Power BI                            | Beginner     | 3 hr     | https://app.datacamp.com/learn/courses/data-modeling-in-power-bi                                                                | Completed   | ***    |
+| 20241228 | DAX      | DataCamp                             | DAX Functions in Power BI                             | Beginner     | 3 hr     | https://app.datacamp.com/learn/courses/dax-functions-in-power-bi                                                                | Completed   | **     |
+| 20250102 | DAX      | Havens Consulting (w. Danii Maslyuk) | DAX Anti-Patterns Series (13 ep)                      | Intermediate | 5 hr     | https://www.youtube.com/playlist?list=PLzN99cpDw6oA4R_YAmkoJpq-g_Dl8i_rh                                                        |             |        |
+|          |          |                                      |                                                       |              |          |                                                                                                                                 |             |        |
+
 
 ## 20241220
 
@@ -71,3 +73,11 @@ Other Azure Features:
 - Debugging golden rule
   - Stop thinking
   - Follow the measure, ask yourself what is the current filter context at each step.
+
+
+## TO Do
+- TAbular editor
+- DAX Studio
+- Create style template
+- Create PBIX Examples
+- Create standards / reference doc
