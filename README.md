@@ -74,6 +74,18 @@ Other Azure Features:
   - Stop thinking
   - Follow the measure, ask yourself what is the current filter context at each step.
 
+### 20241228 DAX Functions in Power BI
+- Context:
+  - Row:
+    - The 'current row' - used by calculated columns 
+  - Query:
+    - subset of data returned by a formula. Can be changed by slicers, page filters, table columns + row headers
+    - Applies AFTER row context
+  - Filter:
+    - Set of values allowed in each context, or values from related table
+    - Applies after filter context (i.e. the effects are temporary / lost)
+    - CALCULATE?
+    - Arguments to a DAX function
 
 ## TO Do
 - TAbular editor
