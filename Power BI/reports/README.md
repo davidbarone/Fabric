@@ -24,6 +24,6 @@ A number of sample pbix files have been included:
 | keepfilters.pbix      | Illustrates how the KEEPFILTERS function works.                                                                      |
 | table effects.pbix    | Illustrates how the various table and matrix effects can be used.                                                    |
 | theme tester.pbix     | Dashboard with a variety of visuals. Can be used to test themes.                                                     |
-|                       |                                                                                                                      |
+| tooltips.pbix         | Illustrates different ways to implement tooltips.                                                                    |
 |                       |                                                                                                                      |
 |                       |                                                                                                                      |
