@@ -18,6 +18,7 @@ A number of sample pbix files have been included:
 | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | calculate.pbix        | Illustrates how nested CALCULATE statements work                                                                     |
 | dynamic measures.pbix | Illustrates how to create a DAX measure to dynamically swap the measure shown on a visual                            |
+| field parameters.pbix | Illustrates using field parameters to create dynamic charts and tables                                               |
 | financials.pbix       | The sample report built from https://learn.microsoft.com/en-gb/power-bi/create-reports/desktop-excel-stunning-report |
 | images.pbix           | various ways to work with icons and images.                                                                          |
 | isblank.pbix          | Illustrates differences between nulls, blanks, empty strings and zeros.                                              |
