@@ -30,9 +30,6 @@
     "#C7B42E",
     "#CB2027"
   ],
-  "neutral": "#FFFFFF",
-  "bad": "#F15854",
-  "good": "#60BD68",
   "background": "#FFFFFF",
   "firstLevelElements": "#000000",
   "secondLevelElements": "#000000",
@@ -71,26 +68,33 @@
         ]
       }
     },
-    "page": {
-      "*": {
-        "background": [
-          { "color": { "solid": { "color": "#EEEEEE" } }, "transparency": 0 }
-        ]
-      }
-    },
-    "textbox": {
-      "*": {}
-    },
     "slicer": {
       "*": {
         "data": [
           {
-            "mode": "Basic"
+            "mode": "Basic",
+            "relativeRange": "",
+            "relativePeriod": ""
           }
         ],
         "selection": [
           {
+            "selectAllCheckboxEnabled": true,
             "singleSelect": true
+          }
+        ],
+        "header": [
+          {
+            "show": false
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "text": "change the slicer title",
+            "textSize": 12,
+            "fontFamily": "DIN",
+            "alignment": "Center"
           }
         ]
       }
@@ -128,7 +132,7 @@
       "*": {
         "labels": [
           {
-            "fontSize": 24
+            "fontSize": 40
           }
         ],
         "wordWrap": [
@@ -292,7 +296,7 @@
         "categoryAxis": [
           {
             "show": true,
-            "axisType": "Categorical",
+            "axisType": "categorical",
             "maxMarginFactor": 50,
             "showAxisTitle": false
           }
@@ -319,7 +323,7 @@
         "categoryAxis": [
           {
             "show": true,
-            "axisType": "Categorical",
+            "axisType": "categorical",
             "maxMarginFactor": 50,
             "showAxisTitle": false
           }
@@ -346,7 +350,7 @@
         "categoryAxis": [
           {
             "show": true,
-            "axisType": "Categorical",
+            "axisType": "categorical",
             "maxMarginFactor": 50,
             "showAxisTitle": false
           }
