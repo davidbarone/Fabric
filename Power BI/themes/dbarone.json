@@ -36,6 +36,7 @@
   "minimum": "#FBB258",
   "center": "#FFFFFF",
   "maximum": "#88BDE6",
+  "null": "#FFFFFF",
   "background": "#FFFFFF",
   "firstLevelElements": "#000000",
   "secondLevelElements": "#000000",
@@ -43,6 +44,34 @@
   "visualStyles": {
     "*": {
       "*": {
+        "border": [
+          {
+            "show": false,
+            "color": { "solid": { "color": "#ddd" } },
+            "width": 1,
+            "radius": 4
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#aaa" } },
+            "position": "Outer",
+            "preset": "Custom",
+            "shadowDistance": 4,
+            "shadowSpread": 0.4,
+            "shadowBlur": 4,
+            "angle": 45
+          }
+        ],
+        "visualTooltip": [
+          {
+            "themedBackground": { "solid": { "color": "#eee" } }
+          }
+        ],
+        "visualHeaderTooltip": [
+          { "themedBackground": { "solid": { "color": "#eee" } } }
+        ],
         "*": [
           {
             "fontFamily": "Segoe UI",

@@ -5,5 +5,6 @@ https://github.com/microsoft/powerbi-desktop-samples/blob/main/Report%20Theme%20
 
 ## Theme Editors
 - Power BI Desktop (very limited though)
-- 
+- https://themes.powerbi.tips/themes/properties
+
 
