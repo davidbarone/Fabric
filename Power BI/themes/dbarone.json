@@ -2,7 +2,6 @@
   "$schema": "reportThemeSchema-2.138.json",
   "name": "ShowMeTheNumbers",
   "dataColors": [
-    "#4D4D4D",
     "#5DA5DA",
     "#FAA43A",
     "#60BD68",
@@ -26,6 +25,13 @@
   "visualStyles": {
     "*": {
       "*": {
+        "background": [
+          {
+            "show": true,
+            "transparency": 0,
+            "color": { "solid": { "color": "#FFFFFF" } }
+          }
+        ],
         "border": [
           {
             "show": false,
@@ -60,11 +66,11 @@
             "fontColor": {
               "solid": { "color": "#000000" }
             },
-            "fontSize": 10,
-            "textSize": 10,
-            "secFontSize": 10,
-            "titleFontSize": 10,
-            "secTitleFontSize": 10
+            "fontSize": 8,
+            "textSize": 8,
+            "secFontSize": 8,
+            "titleFontSize": 8,
+            "secTitleFontSize": 8
           }
         ],
         "title": [
@@ -485,7 +491,7 @@
         ]
       }
     },
-     "tableEx": {
+    "tableEx": {
       "*": {
         "grid": [
           {
