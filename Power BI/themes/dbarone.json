@@ -2,6 +2,7 @@
   "$schema": "reportThemeSchema-2.138.json",
   "name": "ShowMeTheNumbers",
   "dataColors": [
+    "#4D4D4D",
     "#5DA5DA",
     "#FAA43A",
     "#60BD68",
@@ -20,7 +21,9 @@
   "null": "#FFFFFF",
   "background": "#FFFFFF",
   "firstLevelElements": "#000000",
-  "secondLevelElements": "#000000",
+  "secondLevelElements": "#111111",
+  "thirdLevelElements": "#222222",
+  "fourthLevelElements": "#333333",
   "tableAccent": "#999999",
   "visualStyles": {
     "*": {
@@ -35,7 +38,7 @@
         "border": [
           {
             "show": false,
-            "color": { "solid": { "color": "#ddd" } },
+            "color": { "solid": { "color": "#DDDDDD" } },
             "width": 1,
             "radius": 4
           }
@@ -43,7 +46,7 @@
         "dropShadow": [
           {
             "show": true,
-            "color": { "solid": { "color": "#aaa" } },
+            "color": { "solid": { "color": "#DDDDDD" } },
             "position": "Outer",
             "preset": "Custom",
             "shadowDistance": 4,
@@ -54,11 +57,11 @@
         ],
         "visualTooltip": [
           {
-            "themedBackground": { "solid": { "color": "#eee" } }
+            "themedBackground": { "solid": { "color": "#DDDDDD" } }
           }
         ],
         "visualHeaderTooltip": [
-          { "themedBackground": { "solid": { "color": "#eee" } } }
+          { "themedBackground": { "solid": { "color": "#DDDDDD" } } }
         ],
         "*": [
           {
