@@ -46,7 +46,7 @@
         "dropShadow": [
           {
             "show": true,
-            "color": { "solid": { "color": "#DDDDDD" } },
+            "color": { "solid": { "color": "#AAAAAA" } },
             "position": "Outer",
             "preset": "Custom",
             "shadowDistance": 4,
