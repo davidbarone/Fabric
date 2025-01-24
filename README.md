@@ -23,6 +23,8 @@ Other Azure Features:
 
 ## Getting Started
 - https://learn.microsoft.com/en-us/fabric/get-started/
+- To start Fabric without work email: https://www.youtube.com/watch?v=RHV7jZqc_tE
+  - Create free Azure Trial
 
 ## Starting a Fabric Trial
 - https://learn.microsoft.com/en-us/fabric/get-started/fabric-trial
