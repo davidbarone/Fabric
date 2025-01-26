@@ -21,10 +21,33 @@ Other Azure Features:
 ## Terms
 - https://learn.microsoft.com/en-us/fabric/get-started/fabric-terminology
 
+## Fabric Concepts + Licences
+- https://learn.microsoft.com/en-us/fabric/enterprise/licenses
+
 ## Getting Started
 - https://learn.microsoft.com/en-us/fabric/get-started/
 - To start Fabric without work email: https://www.youtube.com/watch?v=RHV7jZqc_tE
   - Create free Azure Trial
+
+- To use Power BI Service, require AAD account (organisational account). Person email (e.g. gmail) not allowed
+- 2 ways to get AAD organisational account:
+  - Microsoft 365 Business subscription
+    - https://www.microsoft.com/en-au/microsoft-365/business/compare-all-microsoft-365-business-products
+    - https://answers.microsoft.com/en-us/msoffice/forum/all/how-to-obtain-free-trial-of-microsoft-fabric/dc5f8473-553f-45b3-92f2-cda8d8d6410c
+    - https://learn.microsoft.com/en-gb/microsoft-365/business-premium/m365-business-premium-setup?view=o365-worldwide&tabs=GetOwn%2CGuided
+    - Sign up for Power BI Service using Microsoft 365 trial: https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-signing-up-for-power-bi-with-a-new-office-365-trial
+  - Creating Azure Tenant
+    - https://www.youtube.com/watch?v=RHV7jZqc_tE
+    - Guy in a cube: https://www.youtube.com/watch?v=uZyy_qqRPiU
+
+- Switching from Microsoft 365 Personal plan to Business Plan
+  - https://support.microsoft.com/en-au/office/switch-to-a-microsoft-365-for-business-subscription-9322ffb8-a35d-4407-8ebe-ed6ea0859b9f
+
+- What you need to access Power BI Service:
+  - Power BI Licence (e.g. Power BI Pro, Power BI Premium). Can pay for one directly, or indirectly (e.g. via Microsoft 365 E5 subscription)
+  - Pro/PPU licence required for Fabric capacities less than F64
+  - Do not need Power BI Pro / PPU licence to access MyWorkspace (https://learn.microsoft.com/en-us/fabric/enterprise/licenses)
+  - Subscribe to Microsoft Fabric, with a subscription (min F2 capacity)
 
 ## Starting a Fabric Trial
 - https://learn.microsoft.com/en-us/fabric/get-started/fabric-trial
