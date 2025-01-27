@@ -36,6 +36,7 @@ This is a general page for Azure information during my Fabric learning journey.
 ### Learning Path: Microsoft Azure Fundamentals: Describe cloud concepts
 
 ### Learning Path: Microsoft Azure Fundamentals: Describe Azure architecture and services
+- https://learn.microsoft.com/en-gb/training/paths/azure-fundamentals-describe-azure-architecture-services/
 - Global Infrastructure map: https://datacenters.microsoft.com/
 - Regions: area with at least 1 data centre
 - Availability Zone: physically separate data centres within Azure region
