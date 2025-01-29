@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "reportThemeSchema-2.138.json",
   "name": "ShowMeTheNumbers",
   "dataColors": [
@@ -10,7 +10,27 @@
     "#B2912F",
     "#B276B2",
     "#DECF3F",
-    "#F15854"
+    "#F15854",
+
+    "#8C8C8C",
+    "#88BDE6",
+    "#FBB258",
+    "#90CD97",
+    "#F6AAC9",
+    "#BFA554",
+    "#BC99C7",
+    "#EDDD46",
+    "#F07E6E",
+
+    "#000000",
+    "#265DAB",
+    "#DF5C24",
+    "#059748",
+    "#E5126F",
+    "#9D722A",
+    "#7B3A96",
+    "#C7B42E",
+    "#CB2027"
   ],
   "neutral": "#FFFFFF",
   "bad": "#F15854",
@@ -56,9 +76,7 @@
           }
         ],
         "visualTooltip": [
-          {
-            "themedBackground": { "solid": { "color": "#DDDDDD" } }
-          }
+          { "themedBackground": { "solid": { "color": "#DDDDDD" } } }
         ],
         "visualHeaderTooltip": [
           { "themedBackground": { "solid": { "color": "#DDDDDD" } } }
@@ -66,9 +84,7 @@
         "*": [
           {
             "fontFamily": "Segoe UI",
-            "fontColor": {
-              "solid": { "color": "#000000" }
-            },
+            "fontColor": { "solid": { "color": "#000000" } },
             "fontSize": 8,
             "textSize": 8,
             "secFontSize": 8,
@@ -81,17 +97,11 @@
             "show": true,
             "alignment": "Center",
             "fontFamily": "Segoe UI",
-            "fontColor": {
-              "solid": { "color": "#000000" }
-            },
+            "fontColor": { "solid": { "color": "#000000" } },
             "fontSize": "10"
           }
         ],
-        "general": [
-          {
-            "responsive": false
-          }
-        ]
+        "general": [{ "responsive": false }]
       }
     },
     "page": {
@@ -101,29 +111,17 @@
         ]
       }
     },
-    "textbox": {
-      "*": {}
-    },
+    "textbox": { "*": {} },
     "slicer": {
       "*": {
-        "data": [
-          {
-            "mode": "Basic"
-          }
-        ],
-        "selection": [
-          {
-            "singleSelect": true
-          }
-        ]
+        "data": [{ "mode": "Basic" }],
+        "selection": [{ "singleSelect": true }]
       }
     },
     "actionButton": {
       "*": {
         "fill": [
-          {
-            "show": true
-          },
+          { "show": true },
           {
             "$id": "default",
             "transparency": 0,
@@ -140,42 +138,18 @@
             "fillColor": { "solid": { "color": "#B3B3B3" } }
           }
         ],
-        "visualHeader": [
-          {
-            "show": false
-          }
-        ]
+        "visualHeader": [{ "show": false }]
       }
     },
     "card": {
-      "*": {
-        "labels": [
-          {
-            "fontSize": 24
-          }
-        ],
-        "wordWrap": [
-          {
-            "show": true
-          }
-        ]
-      }
+      "*": { "labels": [{ "fontSize": 24 }], "wordWrap": [{ "show": true }] }
     },
     "clusteredBarChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
-        "categoryAxis": [
-          {
-            "maxMarginFactor": 50,
-            "showAxisTitle": false
-          }
-        ],
+        "categoryAxis": [{ "maxMarginFactor": 50, "showAxisTitle": false }],
         "valueAxis": [
           {
             "showAxisTitle": false,
@@ -188,17 +162,9 @@
     "clusteredColumnChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
-        "categoryAxis": [
-          {
-            "showAxisTitle": false
-          }
-        ],
+        "categoryAxis": [{ "showAxisTitle": false }],
         "valueAxis": [
           {
             "showAxisTitle": false,
@@ -211,18 +177,9 @@
     "barChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
-        "categoryAxis": [
-          {
-            "maxMarginFactor": 50,
-            "showAxisTitle": false
-          }
-        ],
+        "categoryAxis": [{ "maxMarginFactor": 50, "showAxisTitle": false }],
         "valueAxis": [
           {
             "showAxisTitle": false,
@@ -235,17 +192,9 @@
     "columnChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
-        "categoryAxis": [
-          {
-            "showAxisTitle": false
-          }
-        ],
+        "categoryAxis": [{ "showAxisTitle": false }],
         "valueAxis": [
           {
             "showAxisTitle": false,
@@ -258,18 +207,9 @@
     "hundredPercentStackedBarChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
-        "categoryAxis": [
-          {
-            "maxMarginFactor": 50,
-            "showAxisTitle": false
-          }
-        ],
+        "categoryAxis": [{ "maxMarginFactor": 50, "showAxisTitle": false }],
         "valueAxis": [
           {
             "showAxisTitle": false,
@@ -282,18 +222,9 @@
     "hundredPercentStackedColumnChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
-        "categoryAxis": [
-          {
-            "maxMarginFactor": 50,
-            "showAxisTitle": false
-          }
-        ],
+        "categoryAxis": [{ "maxMarginFactor": 50, "showAxisTitle": false }],
         "valueAxis": [
           {
             "showAxisTitle": false,
@@ -306,11 +237,7 @@
     "lineChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
         "categoryAxis": [
           {
@@ -333,11 +260,7 @@
     "lineClusteredColumnComboChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
         "categoryAxis": [
           {
@@ -360,11 +283,7 @@
     "lineStackedColumnComboChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
         "categoryAxis": [
           {
@@ -387,11 +306,7 @@
     "scatterChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
         "categoryAxis": [
           {
@@ -416,11 +331,7 @@
     "areaChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
         "categoryAxis": [
           {
@@ -443,11 +354,7 @@
     "stackedAreaChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
         "categoryAxis": [
           {
@@ -470,11 +377,7 @@
     "hundredPercentStackedAreaChart": {
       "*": {
         "legend": [
-          {
-            "show": true,
-            "showTitle": false,
-            "position": "RightCenter"
-          }
+          { "show": true, "showTitle": false, "position": "RightCenter" }
         ],
         "categoryAxis": [
           {
