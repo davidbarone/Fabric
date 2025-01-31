@@ -17,6 +17,8 @@ The following fabric-wide technologies are also detailed in sub-folders:
 Other Azure Features:
 - DevOps
   
+## Useful Links
+- Fabric Blog: https://blog.fabric.microsoft.com/en-us/blog
 
 ## Terms
 - https://learn.microsoft.com/en-us/fabric/get-started/fabric-terminology
