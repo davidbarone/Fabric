@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "reportThemeSchema-2.138.json",
-  "name": "ShowMeTheNumbers",
+  "name": "dbarone",
   "dataColors": [
     "#4D4D4D",
     "#5DA5DA",
@@ -57,10 +57,10 @@
         ],
         "border": [
           {
-            "show": false,
-            "color": { "solid": { "color": "#DDDDDD" } },
+            "show": true,
+            "color": { "solid": { "color": "#F0F0F0" } },
             "width": 1,
-            "radius": 4
+            "radius": 0
           }
         ],
         "dropShadow": [
@@ -107,7 +107,7 @@
     "page": {
       "*": {
         "background": [
-          { "color": { "solid": { "color": "#EEEEEE" } }, "transparency": 0 }
+          { "color": { "solid": { "color": "#F0F0F0" } }, "transparency": 0 }
         ]
       }
     },

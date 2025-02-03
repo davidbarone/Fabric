@@ -19,6 +19,7 @@ Other Azure Features:
   
 ## Useful Links
 - Fabric Blog: https://blog.fabric.microsoft.com/en-us/blog
+- Fabric homepage: https://app.fabric.microsoft.com/
 
 ## Terms
 - https://learn.microsoft.com/en-us/fabric/get-started/fabric-terminology
@@ -27,6 +28,8 @@ Other Azure Features:
 - https://learn.microsoft.com/en-us/fabric/enterprise/licenses
 
 ## Getting Started
+- When Azure Tenant Created:
+  - https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/best-practices#5-limit-the-number-of-global-administrators-to-less-than-5
 - https://learn.microsoft.com/en-us/fabric/get-started/
 - To start Fabric without work email: https://www.youtube.com/watch?v=RHV7jZqc_tE
   - Create free Azure Trial
@@ -51,10 +54,19 @@ Other Azure Features:
   - Do not need Power BI Pro / PPU licence to access MyWorkspace (https://learn.microsoft.com/en-us/fabric/enterprise/licenses)
   - Subscribe to Microsoft Fabric, with a subscription (min F2 capacity)
 
-## Starting a Fabric Trial
+Steps to get started:
+1. Create an AAD Entra Tenant / Directory - DONE
+2. Create a user in directory - DONE
+3. Start Fabric Trial (60 days)
+4. At end of trial:
+   1. Create new Azure Subscription
+   2. Purchase F2 capacity
+   3. Purchase Power BI Pro Licence for 1 user
+
+### Starting a Fabric Trial
 - https://learn.microsoft.com/en-us/fabric/get-started/fabric-trial
 
-## Purchasing Fabric
+### Purchasing Fabric
 - https://learn.microsoft.com/en-us/fabric/enterprise/buy-subscription
 
 ## Azure Portal
