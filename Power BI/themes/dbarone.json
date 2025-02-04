@@ -85,11 +85,11 @@
           {
             "fontFamily": "Segoe UI",
             "fontColor": { "solid": { "color": "#000000" } },
-            "fontSize": 8,
-            "textSize": 8,
-            "secFontSize": 8,
-            "titleFontSize": 8,
-            "secTitleFontSize": 8
+            "fontSize": 10,
+            "textSize": 10,
+            "secFontSize": 10,
+            "titleFontSize": 10,
+            "secTitleFontSize": 10
           }
         ],
         "title": [
@@ -107,7 +107,7 @@
     "page": {
       "*": {
         "background": [
-          { "color": { "solid": { "color": "#F0F0F0" } }, "transparency": 0 }
+          { "color": { "solid": { "color": "#F8F8F8" } }, "transparency": 0 }
         ]
       }
     },
