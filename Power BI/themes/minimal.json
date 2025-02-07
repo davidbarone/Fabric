@@ -8,26 +8,58 @@
   "backgroundLight": "#F3F2F1",
   "backgroundNeutral": "#C8C6C4",
   "tableAccent": "#118DFF",
-  "textClasses": {
-    "callout": {
-      "fontSize": 28,
-      "fontFace": "Segoe UI Bold",
-      "color": "#000000"
-    },
-    "title": {
-      "fontSize": 10,
-      "fontFace": "Segoe UI Bold",
-      "color": "#000000"
-    },
-    "header": {
-      "fontSize": 10,
-      "fontFace": "Segoe UI Semibold",
-      "color": "#FF00FF"
-    },
-    "label": {
-      "fontSize": 10,
-      "fontFace": "Segoe UI",
-      "color": "#000000"
+  "visualStyles": {
+    "*": {
+      "actionButton": {
+        "*": {
+          "general": [{ "width": 120, "height": 60 }],
+          "text": [
+            { "show": true },
+            {
+              "$id": "default",
+              "bold": true,
+              "text": "[button]",
+              "fontColor": { "solid": { "color": "#FFFFFF" } },
+              "topMargin": 1,
+              "leftMargin": 1,
+              "rightMargin": 1,
+              "bottomMargin": 1
+            }
+          ],
+          "icon": [
+            {
+              "show": false
+            }
+          ],
+          "border": [
+            { "show": false },
+            {
+              "$id": "default",
+              "width": 30,
+              "color": { "solid": { "color": "#345678" } }
+            }
+          ],
+          "fill": [
+            { "show": true },
+            {
+              "$id": "default",
+              "transparency": 0,
+              "fillColor": { "solid": { "color": "#483d8b" } }
+            },
+            {
+              "$id": "hover",
+              "transparency": 0,
+              "fillColor": { "solid": { "color": "#6a5acd" } }
+            },
+            {
+              "$id": "selected",
+              "transparency": 0,
+              "fillColor": { "solid": { "color": "#B3B3B3" } }
+            }
+          ],
+          "visualHeader": [{ "show": false }]
+        }
+      }
     }
   }
 }

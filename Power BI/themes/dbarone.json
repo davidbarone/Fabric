@@ -141,17 +141,49 @@
     },
     "actionButton": {
       "*": {
+        "general": [{ "width": 120, "height": 60 }],
+        "text": [
+          { "show": true },
+          {
+            "$id": "default",
+            "bold": true,
+            "text": "[button]",
+            "fontColor": { "solid": { "color": "#FFFFFF" } },
+            "topMargin": 1,
+            "leftMargin": 1,
+            "rightMargin": 1,
+            "bottomMargin": 1
+          }
+        ],
+        "icon": [
+          {
+            "show": false
+          }
+        ],
+        "title": [
+          {
+            "show": false
+          }
+        ],
+        "border": [
+          { "show": false },
+          {
+            "$id": "default",
+            "width": 0,
+            "color": { "solid": { "color": "#FFFFFF" } }
+          }
+        ],
         "fill": [
           { "show": true },
           {
             "$id": "default",
             "transparency": 0,
-            "fillColor": { "solid": { "color": "#FFFFFF" } }
+            "fillColor": { "solid": { "color": "#483d8b" } }
           },
           {
             "$id": "hover",
             "transparency": 0,
-            "fillColor": { "solid": { "color": "#E6E6E6" } }
+            "fillColor": { "solid": { "color": "#6a5acd" } }
           },
           {
             "$id": "selected",
