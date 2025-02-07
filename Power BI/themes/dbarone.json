@@ -80,14 +80,14 @@
         "border": [
           {
             "show": true,
-            "color": { "solid": { "color": "#F0F0F0" } },
+            "color": { "solid": { "color": "#ccccff" } },
             "width": 1,
-            "radius": 0
+            "radius": 4
           }
         ],
         "dropShadow": [
           {
-            "show": true,
+            "show": false,
             "color": { "solid": { "color": "#AAAAAA" } },
             "position": "Outer",
             "preset": "Custom",
@@ -120,7 +120,7 @@
     "page": {
       "*": {
         "background": [
-          { "color": { "solid": { "color": "#F8F8F8" } }, "transparency": 0 }
+          { "color": { "solid": { "color": "#e6e6fa" } }, "transparency": 0 }
         ]
       }
     },
@@ -164,6 +164,11 @@
     },
     "card": {
       "*": { "wordWrap": [{ "show": true }] }
+    },
+    "multiRowCard": {
+      "*": {
+        "card": [{ "barShow": false }]
+      }
     },
     "clusteredBarChart": {
       "*": {
