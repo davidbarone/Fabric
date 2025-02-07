@@ -97,6 +97,7 @@ Steps to get started:
 | 20250124 | Visualisation | Stephen Few                          | Show Me The Numbers (book)                                       | Intermediate | 15hr      | n/a                                                                                               | Completed         | *****  | Visualisation design                                                    |
 | 20250128 | Power BI      | Microsoft Learn                      | Use Visuals in Power BI                                          | Intermediate | 76m       | https://learn.microsoft.com/en-us/training/modules/visuals-in-power-bi/                           | Completed         | ***    | How to use basic visuals / page settings                                |
 | 20250129 | Power BI      | Microsoft Learn                      | Use Hierarchies + DAX in you first data model                    | Beginner     | 60m       | https://learn.microsoft.com/en-us/training/modules/use-hierarchies-dax-first-data-model/          | Completed         | **     |                                                                         |
+| 20250203 | DAX           | Microsoft Press                      | The Definitive Guide to DAX 2nd Ed                               | Advanced     | 20hr      | n/a                                                                                               | Chptr #2 of 20    |        |                                                                         |
 
 ## 20241220
 

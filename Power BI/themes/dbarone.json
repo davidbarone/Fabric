@@ -45,6 +45,28 @@
   "thirdLevelElements": "#F3F2F1",
   "fourthLevelElements": "#B3B0AD",
   "tableAccent": "#999999",
+  "textClasses": {
+    "callout": {
+      "fontSize": 24,
+      "fontFace": "Segoe UI Bold",
+      "color": "#000000"
+    },
+    "title": {
+      "fontSize": 8,
+      "fontFace": "Segoe UI Bold",
+      "color": "#000000"
+    },
+    "header": {
+      "fontSize": 8,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#FF00FF"
+    },
+    "label": {
+      "fontSize": 8,
+      "fontFace": "Segoe UI",
+      "color": "#000000"
+    }
+  },
   "visualStyles": {
     "*": {
       "*": {
@@ -84,24 +106,15 @@
         "*": [
           {
             "fontFamily": "Segoe UI",
-            "fontColor": { "solid": { "color": "#000000" } },
-            "fontSize": 10,
-            "textSize": 10,
-            "secFontSize": 10,
-            "titleFontSize": 10,
-            "secTitleFontSize": 10
+            "fontColor": { "solid": { "color": "#252423" } }
           }
         ],
         "title": [
           {
             "show": true,
-            "alignment": "Center",
-            "fontFamily": "Segoe UI",
-            "fontColor": { "solid": { "color": "#000000" } },
-            "fontSize": "10"
+            "alignment": "Center"
           }
-        ],
-        "general": [{ "responsive": false }]
+        ]
       }
     },
     "page": {
@@ -111,7 +124,15 @@
         ]
       }
     },
-    "textbox": { "*": {} },
+    "textbox": {
+      "*": {
+        "text": [
+          {
+            "fontSize": 9
+          }
+        ]
+      }
+    },
     "slicer": {
       "*": {
         "data": [{ "mode": "Basic" }],
@@ -142,7 +163,7 @@
       }
     },
     "card": {
-      "*": { "labels": [{ "fontSize": 24 }], "wordWrap": [{ "show": true }] }
+      "*": { "wordWrap": [{ "show": true }] }
     },
     "clusteredBarChart": {
       "*": {
@@ -415,6 +436,7 @@
         "columnHeaders": [
           {
             "fontColor": { "solid": { "color": "#000000" } },
+            "bold": true,
             "backColor": { "solid": { "color": "#FFFFFF" } },
             "outline": "Bottom only"
           }
@@ -431,6 +453,7 @@
         "total": [
           {
             "totals": true,
+            "bold": true,
             "fontColor": { "solid": { "color": "#000000" } },
             "backColor": { "solid": { "color": "#FFFFFF" } },
             "outline": "Top Only"

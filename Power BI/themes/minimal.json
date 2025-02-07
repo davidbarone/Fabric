@@ -1,0 +1,33 @@
+{
+  "name": "MinimalThemeWClasses",
+  "$schema": "reportThemeSchema-2.138.json",
+  "foreground": "#252423",
+  "foregroundNeutralSecondary": "#605E5C",
+  "foregroundNeutralTertiary": "#B3B0AD",
+  "background": "#FFFFFF",
+  "backgroundLight": "#F3F2F1",
+  "backgroundNeutral": "#C8C6C4",
+  "tableAccent": "#118DFF",
+  "textClasses": {
+    "callout": {
+      "fontSize": 28,
+      "fontFace": "Segoe UI Bold",
+      "color": "#000000"
+    },
+    "title": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI Bold",
+      "color": "#000000"
+    },
+    "header": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#FF00FF"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI",
+      "color": "#000000"
+    }
+  }
+}

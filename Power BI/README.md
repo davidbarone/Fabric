@@ -29,3 +29,5 @@ General links to Power BI learning materials.
 ## Getting Started
 - https://learn.microsoft.com/en-gb/training/modules/get-started-with-power-bi/?WT.mc_id=powerbi_home_inproduct_introcard
 
+## Themes
+- https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-report-themes
