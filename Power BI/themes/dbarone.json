@@ -52,17 +52,17 @@
       "color": "#000000"
     },
     "title": {
-      "fontSize": 8,
+      "fontSize": 12,
       "fontFace": "Segoe UI Bold",
       "color": "#000000"
     },
     "header": {
-      "fontSize": 8,
+      "fontSize": 12,
       "fontFace": "Segoe UI Semibold",
       "color": "#FF00FF"
     },
     "label": {
-      "fontSize": 8,
+      "fontSize": 12,
       "fontFace": "Segoe UI",
       "color": "#000000"
     }
@@ -82,7 +82,7 @@
             "show": true,
             "color": { "solid": { "color": "#ccccff" } },
             "width": 1,
-            "radius": 4
+            "radius": 8
           }
         ],
         "dropShadow": [
@@ -126,9 +126,17 @@
     },
     "textbox": {
       "*": {
+        "padding": [
+          {
+            "top": 5,
+            "right": 5,
+            "bottom": 5,
+            "left": 5
+          }
+        ],
         "text": [
           {
-            "fontSize": 9
+            "fontSize": 14
           }
         ]
       }
@@ -136,7 +144,12 @@
     "slicer": {
       "*": {
         "data": [{ "mode": "Basic" }],
-        "selection": [{ "singleSelect": true }]
+        "selection": [{ "singleSelect": true }],
+        "border": [
+          {
+            "show": false
+          }
+        ]
       }
     },
     "actionButton": {
@@ -199,7 +212,12 @@
     },
     "multiRowCard": {
       "*": {
-        "card": [{ "barShow": false }]
+        "card": [{ "barShow": false }],
+        "categoryLabels": [
+          {
+            "fontSize": 12
+          }
+        ]
       }
     },
     "clusteredBarChart": {
