@@ -574,6 +574,13 @@
             "backColor": { "solid": { "color": "#FFFFFF" } },
             "outline": "Top Only"
           }
+        ],
+        "title": [
+          {
+            "show": true,
+            "text": "[pivotTable title]",
+            "bold": true
+          }
         ]
       }
     },
@@ -637,6 +644,13 @@
             "fontColor": { "solid": { "color": "#000000" } },
             "backColor": { "solid": { "color": "#FFFFFF" } },
             "outline": "Top Only"
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "text": "[pivotTable title]",
+            "bold": true
           }
         ]
       }
