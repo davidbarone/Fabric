@@ -11,11 +11,11 @@ This is a general page for Azure information during my Fabric learning journey.
 
 ## Learning Diary
 
-| Date     | Area           | Provider  | Description                                                            | Level    | Duration | Url                                                                                                       | Status      | Rating | Comments                                     |
-| -------- | -------------- | --------- | ---------------------------------------------------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------- | ----------- | ------ | -------------------------------------------- |
-| 20241214 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe cloud concepts                  | Beginner | 1hr      | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/    | Completed   | **     |                                              |
-| 20250127 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure architecture and services | Beginner | 3hr 25m  | https://learn.microsoft.com/en-gb/training/paths/azure-fundamentals-describe-azure-architecture-services/ | Completed   | ****   | Good grounding of a number of Azure concepts |
-| 20250202 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure management and governance | Beginner | 1hr 52m  | https://learn.microsoft.com/en-gb/training/paths/describe-azure-management-governance/                    | In Progress |        |                                              |
+| Date     | Area           | Provider  | Description                                                            | Level    | Duration | Url                                                                                                       | Status    | Rating | Comments                                     |
+| -------- | -------------- | --------- | ---------------------------------------------------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------- | --------- | ------ | -------------------------------------------- |
+| 20241214 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe cloud concepts                  | Beginner | 1hr      | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/    | Completed | **     |                                              |
+| 20250127 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure architecture and services | Beginner | 3hr 25m  | https://learn.microsoft.com/en-gb/training/paths/azure-fundamentals-describe-azure-architecture-services/ | Completed | ****   | Good grounding of a number of Azure concepts |
+| 20250202 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure management and governance | Beginner | 1hr 52m  | https://learn.microsoft.com/en-gb/training/paths/describe-azure-management-governance/                    | Completed | ****   | Completed 20250209                           |
 
 ## Azure Learning Sandbox
 - https://learn.microsoft.com/en-us/training/support/faq?pivots=sandbox
