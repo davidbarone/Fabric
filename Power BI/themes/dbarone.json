@@ -38,7 +38,7 @@
   "minimum": "#FAA43A",
   "center": "#FFFFFF",
   "maximum": "#5DA5DA",
-  "null": "#FFFFFF",
+  "null": "#CCCCCC",
   "background": "#FFFFFF",
   "firstLevelElements": "#252423",
   "secondLevelElements": "#605E5C",
@@ -67,6 +67,7 @@
       "color": "#000000"
     }
   },
+
   "visualStyles": {
     "*": {
       "*": {
@@ -98,10 +99,14 @@
           }
         ],
         "visualTooltip": [
-          { "themedBackground": { "solid": { "color": "#DDDDDD" } } }
+          {
+            "themedBackground": { "solid": { "color": "#ffffff" } }
+          }
         ],
         "visualHeaderTooltip": [
-          { "themedBackground": { "solid": { "color": "#DDDDDD" } } }
+          {
+            "themedBackground": { "solid": { "color": "#ffffff" } }
+          }
         ],
         "*": [
           {
@@ -112,6 +117,7 @@
         "title": [
           {
             "show": true,
+            "bold": true,
             "alignment": "Center"
           }
         ]
@@ -119,6 +125,13 @@
     },
     "page": {
       "*": {
+        "pageSize": [
+          {
+            "pageSizeTypes": "Custom",
+            "pageSizeHeight": 1080,
+            "pageSizeWidth": 1920
+          }
+        ],
         "background": [
           { "color": { "solid": { "color": "#e6e6fa" } }, "transparency": 0 }
         ]
@@ -137,6 +150,14 @@
         "text": [
           {
             "fontSize": 14
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "text": "[textbox title]",
+            "bold": true,
+            "alignment": "center"
           }
         ]
       }
@@ -208,14 +229,54 @@
       }
     },
     "card": {
-      "*": { "wordWrap": [{ "show": true }] }
+      "*": {
+        "labels": [
+          {
+            "color": { "solid": { "color": "#FFFFFF" } },
+            "bold": true
+          }
+        ],
+        "wordWrap": [{ "show": true }],
+        "background": [
+          {
+            "color": { "solid": { "color": "#483d8b" } }
+          }
+        ],
+        "categoryLabels": [
+          {
+            "color": { "solid": { "color": "#FDFD96" } }
+          }
+        ],
+        "border": [
+          {
+            "show": false
+          }
+        ]
+      }
     },
     "multiRowCard": {
       "*": {
         "card": [{ "barShow": false }],
+        "dataLabels": [
+          {
+            "color": { "solid": { "color": "#FFFFFF" } },
+            "bold": true
+          }
+        ],
         "categoryLabels": [
           {
-            "fontSize": 12
+            "fontSize": 12,
+            "color": { "solid": { "color": "#FDFD96" } }
+          }
+        ],
+        "background": [
+          {
+            "color": { "solid": { "color": "#483d8b" } }
+          }
+        ],
+        "border": [
+          {
+            "show": false
           }
         ]
       }
