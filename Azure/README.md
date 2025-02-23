@@ -11,11 +11,12 @@ This is a general page for Azure information during my Fabric learning journey.
 
 ## Learning Diary
 
-| Date     | Area           | Provider  | Description                                                            | Level    | Duration | Url                                                                                                       | Status    | Rating | Comments                                     |
-| -------- | -------------- | --------- | ---------------------------------------------------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------- | --------- | ------ | -------------------------------------------- |
-| 20241214 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe cloud concepts                  | Beginner | 1hr      | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/    | Completed | **     |                                              |
-| 20250127 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure architecture and services | Beginner | 3hr 25m  | https://learn.microsoft.com/en-gb/training/paths/azure-fundamentals-describe-azure-architecture-services/ | Completed | ****   | Good grounding of a number of Azure concepts |
-| 20250202 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure management and governance | Beginner | 1hr 52m  | https://learn.microsoft.com/en-gb/training/paths/describe-azure-management-governance/                    | Completed | ****   | Completed 20250209                           |
+| Date     | Area           | Provider  | Description                                                            | Level        | Duration  | Url                                                                                                       | Status      | Rating | Comments                                     |
+| -------- | -------------- | --------- | ---------------------------------------------------------------------- | ------------ | --------- | --------------------------------------------------------------------------------------------------------- | ----------- | ------ | -------------------------------------------- |
+| 20241214 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe cloud concepts                  | Beginner     | 1hr       | https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/    | Completed   | **     |                                              |
+| 20250127 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure architecture and services | Beginner     | 3hr 25m   | https://learn.microsoft.com/en-gb/training/paths/azure-fundamentals-describe-azure-architecture-services/ | Completed   | ****   | Good grounding of a number of Azure concepts |
+| 20250202 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure management and governance | Beginner     | 1hr 52m   | https://learn.microsoft.com/en-gb/training/paths/describe-azure-management-governance/                    | Completed   | ****   | Completed 20250209                           |
+| 20250222 | Azure (AZ-400) | Microsoft | DevOps Engineer Expert: Development for enterprise DevOps              | Intermediate | 6hr 45min | https://learn.microsoft.com/en-gb/training/paths/az-400-work-git-for-enterprise-devops/                   | In Progress |        |                                              |
 
 ## Azure Learning Sandbox
 - https://learn.microsoft.com/en-us/training/support/faq?pivots=sandbox
@@ -44,3 +45,9 @@ This is a general page for Azure information during my Fabric learning journey.
 
 ### Learning Path: Microsoft Azure Fundamentals: Describe Azure management and governance 
 - https://learn.microsoft.com/en-gb/training/paths/describe-azure-management-governance/
+
+## AZ-400 DevOps Engineer Expert
+- https://learn.microsoft.com/en-gb/credentials/certifications/devops-engineer/?WT.mc_id=certposter_poster_wwl
+
+### DevOps Engineer Expert: Development for enterprise DevOps 
+- https://learn.microsoft.com/en-gb/training/paths/az-400-work-git-for-enterprise-devops/
