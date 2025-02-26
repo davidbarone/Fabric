@@ -562,7 +562,7 @@
             "fontColorPrimary": { "solid": { "color": "#000000" } },
             "backColorPrimary": { "solid": { "color": "#FFFFFF" } },
             "fontColorSecondary": { "solid": { "color": "#000000" } },
-            "backColorSecondary": { "solid": { "color": "#FFFFFF" } },
+            "backColorSecondary": { "solid": { "color": "#EEEEEE" } },
             "outline": "None"
           }
         ],
@@ -622,7 +622,7 @@
             "fontColorPrimary": { "solid": { "color": "#000000" } },
             "backColorPrimary": { "solid": { "color": "#FFFFFF" } },
             "fontColorSecondary": { "solid": { "color": "#000000" } },
-            "backColorSecondary": { "solid": { "color": "#FFFFFF" } },
+            "backColorSecondary": { "solid": { "color": "#EEEEEE" } },
             "outline": "None"
           }
         ],
