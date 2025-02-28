@@ -2,7 +2,6 @@
   "$schema": "reportThemeSchema-2.138.json",
   "name": "dbarone",
   "dataColors": [
-
     "#8C8C8C",
     "#88BDE6",
     "#FBB258",
@@ -149,11 +148,13 @@
             "left": 5
           }
         ],
-        "background": [{
-          "color":{
-            "solid": {"color": "#FFFFFF"}
+        "background": [
+          {
+            "color": {
+              "solid": { "color": "#FFFFFF" }
+            }
           }
-        }],
+        ],
         "border": [
           {
             "show": false
@@ -182,18 +183,26 @@
     },
     "actionButton": {
       "*": {
-        "general": [{ "width": 120, "height": 60 }],
+        "general": [{ "width": 40, "height": 40 }],
+        "padding": [
+          {
+            "left": 2,
+            "bottom": 2,
+            "right": 2,
+            "top": 2
+          }
+        ],
         "text": [
-          { "show": true },
+          { "show": false },
           {
             "$id": "default",
             "bold": true,
-            "text": "[button]",
-            "fontColor": { "solid": { "color": "#FFFFFF" } },
-            "topMargin": 1,
-            "leftMargin": 1,
-            "rightMargin": 1,
-            "bottomMargin": 1
+            "text": "",
+            "fontColor": { "solid": { "color": "#252423" } },
+            "topMargin": 2,
+            "leftMargin": 2,
+            "rightMargin": 2,
+            "bottomMargin": 2
           }
         ],
         "icon": [
@@ -207,11 +216,11 @@
           }
         ],
         "border": [
-          { "show": false },
+          { "show": true },
           {
-            "$id": "default",
-            "width": 0,
-            "color": { "solid": { "color": "#FFFFFF" } }
+            "width": 2,
+            "color": { "solid": { "color": "#252423" } },
+            "radius": 16
           }
         ],
         "fill": [
@@ -219,17 +228,17 @@
           {
             "$id": "default",
             "transparency": 0,
-            "fillColor": { "solid": { "color": "#284B63" } }
+            "fillColor": { "solid": { "color": "#FAFAFA" } }
           },
           {
             "$id": "hover",
             "transparency": 0,
-            "fillColor": { "solid": { "color": "#3C6E71" } }
+            "fillColor": { "solid": { "color": "#EEEEEE" } }
           },
           {
             "$id": "selected",
             "transparency": 0,
-            "fillColor": { "solid": { "color": "#B3B3B3" } }
+            "fillColor": { "solid": { "color": "#CCCCCC" } }
           }
         ],
         "visualHeader": [{ "show": false }]
