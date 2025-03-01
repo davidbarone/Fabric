@@ -157,7 +157,7 @@
         ],
         "border": [
           {
-            "show": false
+            "show": true
           }
         ],
         "text": [
