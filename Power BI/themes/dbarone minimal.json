@@ -599,18 +599,6 @@
             "outline": "None"
           }
         ],
-        "subTotals": [
-          {
-            "rowSubtotals": true,
-            "columnSubtotals": true,
-            "fontColor": { "solid": { "color": "#000000" } },
-            "backColor": { "solid": { "color": "#FAFAFA" } },
-            "applyToHeaders": true,
-            "rowSubtotalsPosition": "Bottom",
-            "perRowLevel": true,
-            "perColumnLevel": true
-          }
-        ],
         "total": [
           {
             "totals": true,
