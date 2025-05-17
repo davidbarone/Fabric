@@ -1,0 +1,7 @@
+CustomerId,CustomerName,CustomerRating,RowStartDate
+1001,Alice,A,1/1/2025
+1002,Brad,B,1/1/2025
+1003,Chad,C,1/1/2025
+1001,Alice,B,4/1/2025
+1002,Brad,C,4/1/2025
+1003,Chad,A,4/1/2025

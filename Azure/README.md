@@ -17,6 +17,8 @@ This is a general page for Azure information during my Fabric learning journey.
 | 20250127 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure architecture and services | Beginner     | 3hr 25m   | https://learn.microsoft.com/en-gb/training/paths/azure-fundamentals-describe-azure-architecture-services/ | Completed   | ****   | Good grounding of a number of Azure concepts |
 | 20250202 | Azure (AZ-900) | Microsoft | Microsoft Azure Fundamentals: Describe Azure management and governance | Beginner     | 1hr 52m   | https://learn.microsoft.com/en-gb/training/paths/describe-azure-management-governance/                    | Completed   | ****   | Completed 20250209                           |
 | 20250222 | Azure (AZ-400) | Microsoft | DevOps Engineer Expert: Development for enterprise DevOps              | Intermediate | 6hr 45min | https://learn.microsoft.com/en-gb/training/paths/az-400-work-git-for-enterprise-devops/                   | In Progress |        |                                              |
+| 20250429 | ADF            | Microsoft | Introduction to Azure Data Factory                                     | Beginner     | 35m       | https://learn.microsoft.com/en-us/training/modules/intro-to-azure-data-factory/                           | Completed   | ***    |                                              |
+
 
 ## Azure Learning Sandbox
 - https://learn.microsoft.com/en-us/training/support/faq?pivots=sandbox
