@@ -57,12 +57,38 @@ Other Azure Features:
 Steps to get started:
 1. Create an AAD Entra Tenant / Directory - DONE
 2. Create a user in directory - DONE
-3. Start Fabric Trial (60 days)
-4. At end of trial:
+3. Buy Fabric F2 capacity (from Azure portal of M365 portal)
+4. Buy PBI Pro licence (M365 portal admin centre)
+5. Assign licence to user
+
+- If wanting to use free trial instead?
+6. Start Fabric Trial (60 days)
+7. At end of trial:
    1. Create new Azure Subscription
    2. Purchase F2 capacity
    3. Purchase Power BI Pro Licence for 1 user
 
+Purchase a Power BI Pro licence:
+- https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-purchasing-power-bi-pro
+
+Buy a Fabric Subscription:
+- https://learn.microsoft.com/en-us/fabric/enterprise/buy-subscription
+
+Microsoft 365 Admin Centre:
+- https://learn.microsoft.com/en-gb/microsoft-365/admin/add-users/about-admin-roles?view=o365-worldwide
+- https://admin.cloud.microsoft/?#/homepage
+
+### Per User Licences
+- (Fabric) free
+- Power BI Pro
+- PPU (Premium)
+- https://learn.microsoft.com/en-us/fabric/enterprise/licenses
+- Note: To develop custom visuals, you need Pro or PPU
+- Free lets you use MyWorkspace only
+
+Note: Fabric Free Licence is DIFFERENT to Fabric Trial Capacity (60 day)
+- https://learn.microsoft.com/en-us/fabric/fundamentals/fabric-trial
+- 
 ### Starting a Fabric Trial
 - https://learn.microsoft.com/en-us/fabric/get-started/fabric-trial
 
