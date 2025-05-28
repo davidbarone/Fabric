@@ -57,9 +57,13 @@ Other Azure Features:
 Steps to get started:
 1. Create an AAD Entra Tenant / Directory - DONE
 2. Create a user in directory - DONE
-3. Buy Fabric F2 capacity (from Azure portal of M365 portal)
-4. Buy PBI Pro licence (M365 portal admin centre)
-5. Assign licence to user
+3. Create an Azure admin
+4. Purchase a Fabric Free licence
+   1. this will let you publish to myworkspace
+   2. cannot develop custom visuals
+5. Buy Fabric F2 capacity (from Azure portal of M365 portal)
+6. Buy PBI Pro licence (M365 portal admin centre)
+7. Assign licence to user
 
 - If wanting to use free trial instead?
 6. Start Fabric Trial (60 days)
@@ -155,6 +159,16 @@ Note: Fabric Free Licence is DIFFERENT to Fabric Trial Capacity (60 day)
     - Applies after filter context (i.e. the effects are temporary / lost)
     - CALCULATE?
     - Arguments to a DAX function
+
+## Tooling
+
+### Dax Studio
+- Url: https://daxstudio.org/
+
+### Tabular Editor 2.0
+- Url: https://tabulareditor.github.io/TabularEditor/
+- Url: https://www.sqlbi.com/tools/tabular-editor/
+- Url: https://github.com/TabularEditor/TabularEditor/releases
 
 ## TO Do
 - TAbular editor

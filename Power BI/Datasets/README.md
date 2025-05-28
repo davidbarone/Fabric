@@ -16,6 +16,8 @@ All microsoft sample databases are availablle here: https://github.com/microsoft
 - Northwind
 - Wide World Importers
 
+- https://github.com/microsoft/sql-server-samples/tree/master/samples/databases
+
 ## Wide World Importers
 - https://learn.microsoft.com/en-us/sql/samples/wide-world-importers-oltp-install-configure?view=sql-server-ver16
 
